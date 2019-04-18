@@ -24,9 +24,9 @@
 [downloads-badge]: https://img.shields.io/npm/dt/argilo.svg
 [license-badge]: https://img.shields.io/npm/l/argilo.svg
 [bundle-badge]: https://img.shields.io/bundlephobia/minzip/argilo.svg
-[ci]: https://ci.appveyor.com/project/tao-zeng/argilo/branch/ts
-[build-badge]: https://img.shields.io/appveyor/ci/tao-zeng/argilo/ts.svg
-[cover]: https://codecov.io/github/tao-zeng/argilo/branch/ts
-[cover-badge]: https://img.shields.io/codecov/c/github/tao-zeng/argilo/ts.svg
+[ci]: https://ci.appveyor.com/project/tao-zeng/argilo
+[build-badge]: https://img.shields.io/appveyor/ci/tao-zeng/argilo.svg
+[cover]: https://codecov.io/github/tao-zeng/argilo
+[cover-badge]: https://img.shields.io/codecov/c/github/tao-zeng/argilo.svg
 [test]: https://saucelabs.com/u/argilo
 [test-badge]: https://saucelabs.com/browser-matrix/argilo.svg
