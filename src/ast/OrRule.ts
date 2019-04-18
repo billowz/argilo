@@ -9,7 +9,7 @@
 import { Rule, MatchError } from './Rule'
 import { MatchContext, CheckPoint } from './MatchContext'
 import { ComplexRule } from './ComplexRule'
-import { eachCharCodes } from './utils'
+import { eachCharCodes } from './util'
 import { mixin } from '../utils'
 
 /**

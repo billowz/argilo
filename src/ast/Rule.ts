@@ -5,7 +5,7 @@
  * @modified Mon Apr 08 2019 13:58:23 GMT+0800 (China Standard Time)
  */
 import { MatchContext } from './MatchContext'
-import { eachCharCodes } from './utils'
+import { eachCharCodes } from './util'
 import { assert } from '../assert'
 import { isBool, mixin } from '../utils'
 

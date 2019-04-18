@@ -1,7 +1,7 @@
 import { match, or, attachMatch, appendMatch, option, any, discardMatch, and, anyOne, many } from '../api'
 import { MatchContext } from '../MatchContext'
 import { Rule, MatchError, onMatchCallback } from '../Rule'
-import { genCharCodes } from '../utils'
+import { genCharCodes } from '../util'
 import { makeMap } from '../../utils'
 
 type Element = {

@@ -6,7 +6,7 @@
  */
 
 import { pad } from '../format'
-import { escapeStr } from '../utils'
+import { escapeStr } from '../util'
 
 const LINE_REG = /([^\n]+)?(\n|$)/g
 export class Source {
