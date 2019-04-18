@@ -1,0 +1,31 @@
+{
+	"presets": [
+		"@babel/preset-typescript",
+		[
+			"@babel/preset-env",
+			{
+				"modules": "cjs"
+			}
+		]
+	],
+	"plugins": [
+		"babel-plugin-fix-class-properties-uninitialized",
+		["@babel/plugin-proposal-decorators", { "legacy": true }],
+		["@babel/plugin-proposal-class-properties", { "loose": true }],
+		"transform-es3-member-expression-literals",
+		"transform-es3-property-literals"
+	],
+	"env": {
+		"test": {
+			"plugins": [
+				[
+					"istanbul",
+					{
+						"include": ["src/**/*.ts"],
+						"exclude": ["src/**/__*__/*"]
+					}
+				]
+			]
+		}
+	}
+}

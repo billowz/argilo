@@ -1,0 +1,12 @@
+{
+	"name": "Argilo",
+	"out": "./doc",
+	"readme": "./README.md",
+	"exclude": ["**/__spec__/**", "**/__perf__/**"],
+	"mode": "modules",
+	"module": "commonjs",
+	"target": "es6",
+	"ignoreCompilerErrors": "false",
+	"preserveConstEnums": "false",
+	"stripInternal": "false"
+}

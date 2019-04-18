@@ -1,0 +1,20 @@
+{
+	"require": [
+		"babel-register-ts"
+	],
+	"extension": [
+		".ts"
+	],
+	"include": [
+		"src/**/*.ts"
+	],
+	"reporter": [
+		"lcov"
+	],
+	"report-dir": "./coverage/Node",
+	"temp-dir": ".cover-tmp",
+	"cache": true,
+	"all": true,
+	"sourceMap": false,
+	"instrument": false
+}

@@ -1,0 +1,14 @@
+/node_modules
+/dist
+/coverage
+/benchmark
+/doc
+/docs
+/analysis
+/*.log
+/index.html
+/.rpt2_cache
+/.sonarlint
+/.cover-tmp
+/package-lock.json
+/yarn.lock

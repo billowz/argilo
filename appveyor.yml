@@ -1,0 +1,64 @@
+# encrypt: https://ci.appveyor.com/tools/encrypt
+# validate: https://ci.appveyor.com/tools/validate-yaml
+
+version: "{build}"
+image: Visual Studio 2015
+
+cache:
+  - node_modules -> package.json
+  - package-lock.json -> package.json
+
+only_commits:
+  files:
+    - config/
+    - src/
+    - types/
+    - .babelrc
+    - .nycrc
+    - tsconfig.json
+    - rollup.config.js
+    - mocha.opts
+    - tslint.json
+    - package.json
+    - appveyor.yml
+
+environment:
+  CI_NAME: 'appveyor'
+  NODEJS_VERSION: '10'
+  NPM_TOKEN:
+    secure: zTogpCh9AtlTR+osabCb9UMXMtIT8qTE0Rvay78bTORSysIVo5Ev+y6oOsHdDSO9
+  GH_TOKEN:
+    secure: wMVG1uvMB8qswngCrsL0eg6E/7HEaCjbAmXFM26V+sVO1OnP1/mgMu6kGX2uCWm0
+
+init:
+  - echo %APPVEYOR_BUILD_WORKER_IMAGE%
+  - git config --global core.autocrlf input
+
+install:
+  - ps: Install-Product node $env:NODEJS_VERSION
+  - node --version
+  - npm --version
+  - npm install -g codecov
+  - npm install
+  - ps: Update-AppveyorBuild -Version "test($env:APPVEYOR_REPO_BRANCH)`:` ($env:APPVEYOR_BUILD_NUMBER)"
+
+build_script:
+  - npm run package
+
+test_script:
+  - npm run unit:node
+  - npm run unit:browser -- --browsers IE8,IE9,Chrome --single-run
+  - npm run unit:browser -- --browsers IE6,IE7 --single-run --no-iframe
+
+after_test:
+  - cat coverage/*/lcov.info | codecov
+
+deploy_script:
+  - ps: $prev_version=$(node -p "require('./package.json').version")
+  - ps: npx semantic-release
+  - ps: $version=$(node -p "require('./package.json').version")
+  - ps: |
+      if ( $version -ne $prev_version)
+      {
+        Update-AppveyorBuild -Version "release($env:APPVEYOR_REPO_BRANCH)`:` $prev_version -> $version"
+      }
