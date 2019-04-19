@@ -17,7 +17,7 @@ environment:
   GH_TOKEN:
     secure: wMVG1uvMB8qswngCrsL0eg6E/7HEaCjbAmXFM26V+sVO1OnP1/mgMu6kGX2uCWm0
   COVERALLS_REPO_TOKEN:
-    secure: x64xR1RNwq2AIWvPdU/4fBwyXPUnMG5U9SvX14ZwKT+VMIDGSVaxULT/u8RreRF1
+    secure: h7+00+xENrj5Y75g+WWNZ/aECu3wFLlGWY8MuNMXZ5iFzC3Mqk/Rb0J0BldYq8Yb
 
 init:
   - echo "the build worker image is %APPVEYOR_BUILD_WORKER_IMAGE%"
@@ -33,7 +33,7 @@ install:
       $branch    = $(node -p "require('./package.json').branch")
       $last_tag  = $(git tag -l --merged $branch --sort=-taggerdate)
       $last_tag  = $(if ($last_tag) {$last_tag[0]} else {$(node -p "require('./package.json').version")})
-      $test_type = $(if ($env:APPVEYOR_REPO_BRANCH -eq $branch) {"test"} else {"dev-test"})
+      $test_type = $(if ($env:APPVEYOR_REPO_BRANCH -eq origin/$branch) {"test"} else {"dev-test"})
       $title     = "$test_type $(if ($env:APPVEYOR_REPO_TAG_NAME) {"for $branch@$last_tag"} else {"on $branch@$last_tag""})"
       echo $title
       Update-AppveyorBuild -Version "$title ($env:APPVEYOR_BUILD_NUMBER)"
