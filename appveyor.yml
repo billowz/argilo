@@ -31,9 +31,9 @@ install:
       echo "the npm version is $(npm --version)"
 
       $branch    = $(node -p "require('./package.json').branch")
-      $last_tag  = $(git tag -l --merged $branch --sort=-taggerdate)
+      $last_tag  = $(git tag -l --merged origin/$branch --sort=-taggerdate)
       $last_tag  = $(if ($last_tag) {$last_tag[0]} else {$(node -p "require('./package.json').version")})
-      $test_type = $(if ($env:APPVEYOR_REPO_BRANCH -eq origin/$branch) {"test"} else {"dev-test"})
+      $test_type = $(if ($env:APPVEYOR_REPO_BRANCH -eq $branch) {"test"} else {"dev-test"})
       $title     = "$test_type $(if ($env:APPVEYOR_REPO_TAG_NAME) {"for $branch@$last_tag"} else {"on $branch@$last_tag""})"
       echo $title
       Update-AppveyorBuild -Version "$title ($env:APPVEYOR_BUILD_NUMBER)"
