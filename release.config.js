@@ -4,7 +4,8 @@ module.exports = {
 		'master',
 		{
 			name: 'alpha',
-			prerelease: true
+			channel: 'alpha',
+			prerelease: 'preview'
 		}
 	],
 	plugins: [
@@ -13,6 +14,11 @@ module.exports = {
 			{
 				preset: 'angular',
 				releaseRules: [
+					{
+						type: 'build',
+						scope: 'release',
+						release: 'major'
+					},
 					{
 						type: 'docs',
 						scope: 'README',

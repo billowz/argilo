@@ -5,6 +5,7 @@ version: "{build}"
 image: Visual Studio 2015
 
 cache:
+  - '%APPDATA%\npm-cache'
   - node_modules -> package.json
   - package-lock.json -> package.json
 
@@ -29,18 +30,30 @@ environment:
     secure: zTogpCh9AtlTR+osabCb9UMXMtIT8qTE0Rvay78bTORSysIVo5Ev+y6oOsHdDSO9
   GH_TOKEN:
     secure: wMVG1uvMB8qswngCrsL0eg6E/7HEaCjbAmXFM26V+sVO1OnP1/mgMu6kGX2uCWm0
+  COVERALLS_REPO_TOKEN:
+    secure: x64xR1RNwq2AIWvPdU/4fBwyXPUnMG5U9SvX14ZwKT+VMIDGSVaxULT/u8RreRF1
 
 init:
-  - echo %APPVEYOR_BUILD_WORKER_IMAGE%
+  - echo "the build worker image is %APPVEYOR_BUILD_WORKER_IMAGE%"
   - git config --global core.autocrlf input
 
 install:
-  - ps: Install-Product node $env:NODEJS_VERSION
-  - node --version
-  - npm --version
-  - npm install -g codecov
+  - ps: |
+      Install-Product node $env:NODEJS_VERSION
+
+      echo "the node version is $(node --version)"
+      echo "the npm version is $(npm --version)"
+
+      $branch    = $(node -p "require('./package.json').branch")
+      $last_tag  = $(git tag -l --merged $branch --sort=-taggerdate)
+      $last_tag  = $(if ($last_tag) {$last_tag[0]} else {$(node -p "require('./package.json').version")})
+      $test_type = $(if ($env:APPVEYOR_REPO_BRANCH -eq $branch) {"test"} else {"dev-test"})
+      $title     = "$test_type $(if ($env:APPVEYOR_REPO_TAG_NAME) {"for $branch@$last_tag"} else {"on $branch@$last_tag""})"
+      echo $title
+      Update-AppveyorBuild -Version "$title"
+
+  - npm install -g coveralls
   - npm install
-  - ps: Update-AppveyorBuild -Version "test($env:APPVEYOR_REPO_BRANCH)`:` ($env:APPVEYOR_BUILD_NUMBER)"
 
 build_script:
   - npm run package
@@ -51,14 +64,15 @@ test_script:
   - npm run unit:browser -- --browsers IE6,IE7 --single-run --no-iframe
 
 after_test:
-  - cat coverage/*/lcov.info | codecov
+  - cat coverage/*/lcov.info | coveralls
 
 deploy_script:
-  - ps: $prev_version=$(node -p "require('./package.json').version")
-  - ps: npx semantic-release
-  - ps: $version=$(node -p "require('./package.json').version")
+  - npx semantic-release -d -p @semantic-release/commit-analyzer
+  - echo "======================================"
   - ps: |
-      if ( $version -ne $prev_version)
+      npx semantic-release
+      $next_tag=$(git tag -l --merged master --sort=-taggerdate)
+      if ( $next_tag -and $next_tag[0] -ne $last_tag )
       {
-        Update-AppveyorBuild -Version "release($env:APPVEYOR_REPO_BRANCH)`:` $prev_version -> $version"
+        Update-AppveyorBuild -Version "release`:` $last_tag -> $next_tag[0]"
       }

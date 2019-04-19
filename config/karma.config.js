@@ -1,6 +1,6 @@
 const path = require('path'),
 	json = require('rollup-plugin-json'),
-	rollupConfig = require('./rollupConfig'),
+	rollupConfig = require('./rollup.config.mk'),
 	pkg = require('../package.json')
 
 const CI = process.env.CI,
@@ -44,8 +44,7 @@ module.exports = function(config) {
 				sourcemap: !CI && 'inline',
 				output: {
 					format: 'iife',
-					name: namespace,
-					file: false
+					name: namespace
 				}
 			}),
 			transformPath(filepath) {

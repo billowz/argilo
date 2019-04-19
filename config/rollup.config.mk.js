@@ -17,19 +17,19 @@ const configOptions = mkMap(
 
 /**
  * @param {*}					config...								rollup configuration
+ * @param {string}				[config.outDir='.']						output dir
  * @param {"es3"|"es5"|"es6"} 	[config.target="es3"]					config target
- * @param {boolean}				[config.debug=false]						debug mode
- * @param {string[]}			[config.extensions=[".js",".ts"]]		file extensions
- * @param {boolean}				[config.sourcemap=true]					enable source map
- * @param {*}					[config.compact=false]					compact bundle
- * @param {boolean}				[config.progress=true]					show progress
  * @param {boolean}				[config.strict=true]					use strict
- * @param {*}					config.macros							plain object defining the variables used by jscc during the preprocessing
+ * @param {boolean}				[config.debug=false]					debug mode
+ * @param {*}					[config.compact=false]					compact bundle
+ * @param {boolean}				[config.sourcemap=true]					enable source map
  * @param {string}				config.sourceRoot						root path of source map
- * @param {string}				config.outDir							out dir
- * @param {string}				config.codeAnalysis						code analysis file
+ * @param {string[]}			[config.extensions=[".js",".ts"]]		file extensions
+ * @param {*}					config.macros							plain object defining the variables used by jscc during the preprocessing
  * @param {string}				config.banner							banner
  * @param {string}				config.footer							banner
+ * @param {boolean}				[config.progress=true]					show progress
+ * @param {string}				config.codeAnalysis						code analysis file
  * @param {*}					config.babel							babel configuration
  * @param {any[]}				config.babel.presets					babel presets
  * @param {any[]}				config.babel.plugins					babel plugins
@@ -48,93 +48,101 @@ function mkConfig(config) {
 		es5 = target === 'es5',
 		es6 = target === 'es6'
 
-	const rollup = assignBy({}, k => !configOptions[k], config),
-		babelPresetENV = assignBy(
-			{
-				modules: false,
-				loose: es3,
-				useBuiltIns: false,
-				spec: false,
-				targets: es3
-					? {
-							ie: '6'
-					  }
-					: es5
-					? {
-							ie: '9'
-					  }
-					: {
-							chrome: '59'
-					  }
-			},
-			k => !babelConfigOptions[k],
-			config.babel
-		)
+	const rollupOptions = assignBy({}, k => !configOptions[k], config, {
+			output: (Array.isArray(config.output) ? config.output : [config.output])
+				.filter(o => !!o)
+				.map(output => {
+					const amdModule = /^(?:amd|umd)$/.test(output.format),
+						amd =
+							amdModule && (!output.amd || typeof output.amd !== 'object')
+								? { id: output.amd || output.name }
+								: undefined,
+						file =
+							output.file &&
+							path.join(
+								config.outDir || '.',
+								!/\.js$/.test(output.file)
+									? `${output.file}${debug ? '.dev' : ''}${compact ? '.min' : ''}.js`
+									: output.file
+							),
+						sourceRoot =
+							output.sourceRoot ||
+							config.sourceRoot ||
+							(amdModule ? `/${amd.id}` : output.name && `/${output.name}`),
+						sourcemapPathTransform = output.sourcemapPathTransform
 
-	const { plugins: babelPlugins = [], presets: babelPresets = [] } = config.babel || {}
+					return Object.assign(
+						{
+							banner,
+							footer,
+							sourcemap,
+							strict: config.strict !== false,
+							esModule: !es3,
+							freeze: !es3,
+							compact: !!compact
+						},
+						output,
+						{
+							amd,
+							file,
+							sourceRoot: undefined,
+							sourcemapPathTransform(p) {
+								if (sourceRoot) {
+									p = path.join(sourceRoot, p.replace(/^(?:\.\.[\/\\])+/, ''))
+								}
+								return sourcemapPathTransform ? sourcemapPathTransform(p) : p
+							}
+						}
+					)
+				})
+		}),
+		babelOptions = config.babel || {}
 
-	if (!Array.isArray(rollup.output)) rollup.output = [rollup.output]
-	rollup.output = rollup.output
-		.filter(o => !!o)
-		.map(output => {
-			output = Object.assign({}, output)
-			const amdModule = /^(?:amd|umd)$/.test(output.format)
-			if (amdModule && (!output.amd || typeof output.amd !== 'object')) {
-				output.amd = { id: typeof output.amd === 'string' ? output.amd : output.name }
-			}
+	if (rollupOptions.output.length <= 1) rollupOptions.output = rollupOptions.output[0]
 
-			if (!output.file) {
-				delete output.file
-			} else {
-				if (!/\.js$/.test(output.file)) {
-					output.file = `${output.file}${debug ? '.dev' : ''}${compact ? '.min' : ''}.js`
-				}
-				config.outDir && (output.file = path.join(config.outDir, output.file))
-			}
-			assignIf(output, {
-				banner,
-				footer,
-				sourcemap,
-				strict: config.strict !== false,
-				esModule: !es3,
-				freeze: !es3,
-				compact: !!compact
-			})
-
-			let sourceRoot =
-				output.sourceRoot ||
-				config.sourceRoot ||
-				(amdModule ? '/' + output.amd.id : output.name && '/' + output.name)
-			delete output.sourceRoot
-
-			const sourcemapPathTransform = output.sourcemapPathTransform
-			output.sourcemapPathTransform = p => {
-				if (sourceRoot) {
-					p = path.join(sourceRoot, p.replace(/^(?:\.\.[\/\\])+/, ''))
-				}
-				return sourcemapPathTransform ? sourcemapPathTransform(p) : p
-			}
-			return output
-		})
-	if (rollup.output.length < 2) rollup.output = rollup.output[0]
-
-	return Object.assign({}, rollup, {
+	return Object.assign({}, rollupOptions, {
 		plugins: [
 			nodeResolve({ mainFields: ['module', 'main'], extensions }),
 			commonjs(),
 			babelPlugin({
-				presets: ['@babel/preset-typescript', ['@babel/preset-env', babelPresetENV]].concat(babelPresets),
-				plugins: babelPlugins,
+				presets: [
+					'@babel/preset-typescript',
+					[
+						'@babel/preset-env',
+						assignBy(
+							{
+								modules: false,
+								loose: es3,
+								useBuiltIns: false,
+								spec: false,
+								targets: es3
+									? {
+											ie: '6'
+									  }
+									: es5
+									? {
+											ie: '9'
+									  }
+									: {
+											chrome: '59'
+									  }
+							},
+							k => !babelConfigOptions[k],
+							config.babel
+						)
+					]
+				].concat(babelOptions.presets || []),
+				plugins: babelOptions.plugins || [],
 				extensions
 			}),
 			jscc({ values: Object.assign({ _TARGET: target, _DEBUG: debug }, config.macros) }),
 			!CI && config.progress !== false && progress()
 		]
-			.concat(rollup.plugins || [])
+			.concat(rollupOptions.plugins || [])
 			.concat([
-				/* prototypeMinify({
-					sourcemap: !!sourcemap
-				}), */
+				// prototypeMinify({
+				// 	sourcemap: !!sourcemap
+				// }),
 				compact &&
 					terser(
 						Object.assign(
@@ -164,10 +172,7 @@ function mkConfig(config) {
 				!CI &&
 					codeAnalysis &&
 					visualizer({
-						filename:
-							typeof codeAnalysis === 'string'
-								? codeAnalysis.replace(/\.html$/, '') + '.html'
-								: 'analysis/bundle.html',
+						filename: codeAnalysis.replace(/\.html$/, '') + '.html',
 						sourcemap: !!sourcemap
 					})
 			])
@@ -175,8 +180,6 @@ function mkConfig(config) {
 	})
 }
 module.exports = mkConfig
-mkConfig.assignBy = assignBy
-mkConfig.assignIf = assignIf
 
 function assignBy(target = {}, filter) {
 	for (let i = 2, l = arguments.length; i < l; i++) {
@@ -190,10 +193,6 @@ function assignBy(target = {}, filter) {
 		}
 	}
 	return target
-}
-
-function assignIf(target, ...args) {
-	return assignBy.apply(null, [target, (k, t) => !(k in t)].concat(args))
 }
 
 function mkMap(str) {

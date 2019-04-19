@@ -1,6 +1,5 @@
-const rollupConfig = require('./config/rollupConfig'),
-	pkg = require('./package.json')
-const { assignIf } = rollupConfig
+const rollupConfig = require('./rollup.config.mk'),
+	pkg = require('../package.json')
 
 const banner = `/*
  *    __ _ _ __ __ _(_) | ___
@@ -21,9 +20,9 @@ const banner = `/*
 const bundle = pkg.bundle || pkg.name,
 	namespace = pkg.namespace || pkg.name,
 	baseCfg = {
-		input: './src/index.ts',
+		outDir: 'dist',
+		input: 'src/index.ts',
 		banner,
-		outDir: './dist',
 		sourceRoot: '/' + bundle,
 		external: Object.keys(pkg.dependencies || {})
 	},
