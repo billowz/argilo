@@ -9,20 +9,6 @@ cache:
   - node_modules -> package.json
   - package-lock.json -> package.json
 
-only_commits:
-  files:
-    - config/
-    - src/
-    - types/
-    - .babelrc
-    - .nycrc
-    - tsconfig.json
-    - rollup.config.js
-    - mocha.opts
-    - tslint.json
-    - package.json
-    - appveyor.yml
-
 environment:
   CI_NAME: 'appveyor'
   NODEJS_VERSION: '10'
