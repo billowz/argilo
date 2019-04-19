@@ -21,7 +21,7 @@ module.exports = {
 					},
 					{
 						type: 'docs',
-						scope: 'README',
+						scope: 'readme',
 						release: 'patch'
 					},
 					{

@@ -11,22 +11,23 @@
 
 [![Build][build-badge]][ci]
 [![Coverage][cover-badge]][cover]
+<br/>
 [![Version][version-badge]][npm]
-[![Bundle Size][bundle-badge]][npm]
+[![Bundle Size][bundle-badge]][bundle]
 [![Downloads][downloads-badge]][npm]
 
 ## License
 
 [MIT](http://opensource.org/licenses/MIT)
 
-[npm]: https://npmjs.org/package/argilo
-[version-badge]: https://img.shields.io/npm/v/argilo.svg
+[ci]: https://ci.appveyor.com/project/tao-zeng/argilo/branch/dev
+[build-badge]: https://img.shields.io/appveyor/ci/tao-zeng/argilo/dev.svg
+[cover]: https://coveralls.io/github/tao-zeng/argilo?branch=dev
+[cover-badge]: https://img.shields.io/coveralls/github/tao-zeng/argilo/dev.svg
+
+[npm]: https://www.npmjs.com/package/argilo/v/latest
 [downloads-badge]: https://img.shields.io/npm/dt/argilo.svg
-[license-badge]: https://img.shields.io/npm/l/argilo.svg
-[bundle-badge]: https://img.shields.io/bundlephobia/minzip/argilo.svg
-[ci]: https://ci.appveyor.com/project/tao-zeng/argilo
-[build-badge]: https://img.shields.io/appveyor/ci/tao-zeng/argilo.svg
-[cover]: https://codecov.io/github/tao-zeng/argilo
-[cover-badge]: https://img.shields.io/codecov/c/github/tao-zeng/argilo.svg
-[test]: https://saucelabs.com/u/argilo
-[test-badge]: https://saucelabs.com/browser-matrix/argilo.svg
+
+[version-badge]: https://img.shields.io/npm/v/argilo/latest.svg
+[bundle]: https://bundlephobia.com/result?p=argilo@latest
+[bundle-badge]: https://img.shields.io/bundlephobia/minzip/argilo/latest.svg
