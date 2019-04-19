@@ -50,7 +50,7 @@ install:
       $test_type = $(if ($env:APPVEYOR_REPO_BRANCH -eq $branch) {"test"} else {"dev-test"})
       $title     = "$test_type $(if ($env:APPVEYOR_REPO_TAG_NAME) {"for $branch@$last_tag"} else {"on $branch@$last_tag""})"
       echo $title
-      Update-AppveyorBuild -Version "$title"
+      Update-AppveyorBuild -Version "$title ($env:APPVEYOR_BUILD_NUMBER)"
 
   - npm install -g coveralls
   - npm install
