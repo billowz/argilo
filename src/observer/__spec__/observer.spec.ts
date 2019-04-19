@@ -19,7 +19,7 @@ import {
 import { format } from '../../format'
 import { parsePath, formatPath } from '../../path'
 import { nextTick } from '../../nextTick'
-import { create, isDKey, assign, keys, eq, eachObj, mapObj, eachArray } from '../../util'
+import { create, isDKey, assign, keys, eq, eachObj, mapObj, eachArray } from '../../utils'
 import { assert, popErrStack } from '../../assert'
 
 const vb = proxyEnable === 'vb',
