@@ -3,7 +3,7 @@
  * @module observer
  * @author Tao Zeng <tao.zeng.zt@qq.com>
  * @created Tue Mar 19 2019 14:12:23 GMT+0800 (China Standard Time)
- * @modified Wed Apr 10 2019 12:56:14 GMT+0800 (China Standard Time)
+ * @modified Mon Apr 22 2019 18:26:40 GMT+0800 (China Standard Time)
  */
 
 import { IObserver, ObserverTarget, ARRAY_CHANGE, ARRAY_LENGTH } from './IObserver'
@@ -30,28 +30,19 @@ export default function(): ObservePolicy {
 								len = value
 							}
 						} else {
-							var orginal = source[prop],
-								changed = 0
-							if (orginal !== value) {
-								observer.notify(prop, orginal)
-								changed = 1
-							}
+							observer.notify(prop, source[prop])
 							if (prop >= len) {
 								observer.notify(ARRAY_LENGTH, len)
 								len = target[ARRAY_LENGTH]
-								changed = 1
 							}
-							changed && observer.notify(ARRAY_CHANGE, observer.proxy)
+							observer.notify(ARRAY_CHANGE, observer.proxy)
 						}
 						source[prop] = value
 						return true
 					}
 				} else {
 					setter = (source, prop, value) => {
-						var orginal = source[prop]
-						if (orginal !== value) {
-							observer.notify(prop, orginal)
-						}
+						observer.notify(prop, source[prop])
 						source[prop] = value
 						return true
 					}

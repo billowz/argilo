@@ -29,9 +29,6 @@
 		"README.md",
 		"LICENSE"
 	],
-	"publishConfig": {
-		"access": "public"
-	},
 	"private": false,
 	"license": "MIT",
 	"scripts": {
@@ -58,11 +55,6 @@
 			"commit-msg": "commitlint -c -x @commitlint/config-conventional -e $GIT_PARAMS"
 		}
 	},
-	"config": {
-		"commitizen": {
-			"path": "cz-conventional-changelog"
-		}
-	},
 	"devDependencies": {
 		"@babel/core": "^7.4.3",
 		"@babel/plugin-external-helpers": "^7.2.0",
@@ -84,10 +76,8 @@
 		"babel-plugin-transform-es3-property-literals": "^6.22.0",
 		"babel-register-ts": "^7.0.0",
 		"benchmark": "^2.1.4",
-		"commitizen": "^3.1.0",
 		"console-polyfill": "^0.3.0",
 		"cross-env": "^5.2.0",
-		"cz-conventional-changelog": "^2.1.0",
 		"dts-bundle-generator": "^3.0.0",
 		"esdoc": "^1.1.0",
 		"esdoc-standard-plugin": "^1.0.0",

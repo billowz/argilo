@@ -3,7 +3,7 @@
  * @module observer
  * @author Tao Zeng <tao.zeng.zt@qq.com>
  * @created Tue Mar 19 2019 14:12:23 GMT+0800 (China Standard Time)
- * @modified Wed Apr 10 2019 19:55:47 GMT+0800 (China Standard Time)
+ * @modified Mon Apr 22 2019 18:27:18 GMT+0800 (China Standard Time)
  */
 import { ObserverTarget, IWatcher, IObserver } from './IObserver'
 import { ObservePolicy } from './ObservePolicy'
@@ -91,10 +91,7 @@ export class VBProxy<T extends {}> {
 		} else if (fns[prop]) {
 			fns[prop] = null
 		}
-		const original = source[prop]
-		if (original !== value) {
-			this.__observer.notify(prop, original)
-		}
+		this.__observer.notify(prop, source[prop])
 		source[prop] = value
 	}
 

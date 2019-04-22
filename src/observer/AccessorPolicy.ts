@@ -3,7 +3,7 @@
  * @module observer
  * @author Tao Zeng <tao.zeng.zt@qq.com>
  * @created Tue Mar 19 2019 14:12:23 GMT+0800 (China Standard Time)
- * @modified Wed Apr 10 2019 13:07:06 GMT+0800 (China Standard Time)
+ * @modified Mon Apr 22 2019 18:28:04 GMT+0800 (China Standard Time)
  */
 
 import { IObserver, IWatcher, ARRAY_CHANGE, ObserverTarget, ARRAY_LENGTH } from './IObserver'
@@ -27,17 +27,13 @@ export default function(): ObservePolicy {
 				let setter: (newValue: any) => void
 				if (!observer.isArray) {
 					setter = (newValue: any) => {
-						if (value !== newValue) {
-							watcher.notify(value)
-						}
+						watcher.notify(value)
 						value = newValue
 					}
 				} else if (prop !== ARRAY_CHANGE && prop !== ARRAY_LENGTH) {
 					setter = (newValue: any) => {
-						if (value !== newValue) {
-							watcher.notify(value)
-							observer.notify(ARRAY_CHANGE, target)
-						}
+						watcher.notify(value)
+						observer.notify(ARRAY_CHANGE, target)
 						value = newValue
 					}
 				} else {

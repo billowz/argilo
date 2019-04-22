@@ -2,7 +2,7 @@
  * @module observer
  * @author Tao Zeng <tao.zeng.zt@qq.com>
  * @created Wed Dec 26 2018 13:59:10 GMT+0800 (China Standard Time)
- * @modified Mon Apr 15 2019 19:33:15 GMT+0800 (China Standard Time)
+ * @modified Mon Apr 22 2019 18:38:12 GMT+0800 (China Standard Time)
  */
 
 import { ObserverTarget, IWatcher, OBSERVER_KEY, IObserver, ARRAY_CHANGE, ObserverCallback } from './IObserver'
@@ -427,14 +427,20 @@ class Topic {
 			for (; i < l; i++) {
 				sub = subs[i]
 				orgSubObserver = sub.__observer
-				if (!subObserver || orgSubObserver != subObserver) {
+				if (!subObserver || subObserver != orgSubObserver || orgSubObserver.isArray) {
 					sub.__bind(subObserver)
 
 					if ((subOriginal = sub.__original) === V) {
 						// 1. this subtopic has not been changed, using the original value of the current topic
 						// *2. this subtopic has been changed and collected, and the collector retains its original value
 						// *   this does not happen after the topics are sorted by ID before collection
-						subOriginal = sub.__dirty || isNil(original) ? undefined : original[sub.__prop]
+						subOriginal =
+							sub.__dirty ||
+							(orgSubObserver && isArrayChangeProp(orgSubObserver, sub.__prop)
+								? original
+								: isNil(original)
+								? undefined
+								: original[sub.__prop])
 					} else {
 						// this subtopic was changed but not collected, collected in advance
 						sub.__original = V

@@ -135,7 +135,7 @@ function mkConfig(config) {
 				plugins: babelOptions.plugins || [],
 				extensions
 			}),
-			jscc({ values: Object.assign({ _TARGET: target, _DEBUG: debug }, config.macros) }),
+			//jscc({ values: Object.assign({ _TARGET: target, _DEBUG: debug }, config.macros) }),
 			!CI && config.progress !== false && progress()
 		]
 			.concat(rollupOptions.plugins || [])
