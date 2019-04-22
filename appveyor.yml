@@ -20,166 +20,174 @@ environment:
     secure: zTogpCh9AtlTR+osabCb9UMXMtIT8qTE0Rvay78bTORSysIVo5Ev+y6oOsHdDSO9
   GH_TOKEN:
     secure: wMVG1uvMB8qswngCrsL0eg6E/7HEaCjbAmXFM26V+sVO1OnP1/mgMu6kGX2uCWm0
-  COVERALLS_REPO_TOKEN:
-    secure: h7+00+xENrj5Y75g+WWNZ/aECu3wFLlGWY8MuNMXZ5iFzC3Mqk/Rb0J0BldYq8Yb
 
 init:
   - git config --global core.autocrlf input
+  - ps: |
+      function PrintMessage($message, $Category="Information")
+      {
+        if (-not $Category) {
+            $Category = "Information"
+        }
+        Write-Host $message
+        Add-AppveyorMessage $message -Category $Category
+      }
+      $timePoints = New-Object -TypeName System.Collections.ArrayList
+      function StartPrintMessage($message, $Category)
+      {
+        $timePoints.add($(GET-DATE))|Out-Null
+        PrintMessage $message $Category
+      }
+      function EndPrintMessage($message, $Category)
+      {
+        PrintMessage "$message use $($(New-TimeSpan $timePoints[$timePoints.COUNT - 1]).TotalSeconds)s" $Category
+        $timePoints.removeAt($timePoints.COUNT - 1)
+      }
+      function ParseNextVersion($message, $error)
+      {
+        $lastErr = $LastExitCode
+        $message = $message  -join "`n"
+        Write-Host $message
+        if ($error -and $lastErr -ne 0) {
+          PrintMessage $error -Category Warning
+        }
+        if ($message -match "The Next release version is ([^\r\n]+)") {
+          return $Matches[1]
+        }
+      }
+      function LoadLastTag()
+      {
+        git fetch --tags
+        return git tag -l --merged origin/$env:APPVEYOR_REPO_BRANCH --sort=-taggerdate | Select-Object -Index 0  | %{$_ -replace "^v|@.+$",""}
+      }
+      function Tag2Version($tag)
+      {
+        return $tag -replace "^v|@.+$",""
+      }
 
 install:
   # install nodejs
   - ps: Install-Product node $env:NODEJS_VERSION
   - ps: |
-      echo "The build worker image is $env:APPVEYOR_BUILD_WORKER_IMAGE"
-      echo "The node version is $(node --version)"
-      echo "The npm version is $(npm --version)"
+      PrintMessage "The build worker image is $env:APPVEYOR_BUILD_WORKER_IMAGE"
+      PrintMessage "The node version is $(node --version)"
+      PrintMessage "The npm version is $(npm --version)"
 
-      Add-AppveyorMessage "The build worker image is $env:APPVEYOR_BUILD_WORKER_IMAGE"
-      Add-AppveyorMessage "The node version is $(node --version)"
-      Add-AppveyorMessage "The npm version is $(npm --version)"
   # install dependencies
-  - ps: Add-AppveyorMessage "Installing develop dependencies..."
-  - ps: $timepoint = Get-Date
-  - npm install -g coveralls
+  - ps: StartPrintMessage "Installing develop dependencies..."
+  - npm install -g codecov
   - npm install
-  - ps: Add-AppveyorMessage "Install develop dependencies use $($(New-TimeSpan $timepoint).TotalSeconds)s"
-  - ps: Set-AppveyorBuildVariable 'TestVariable' 'This is a test message'
+  - ps: EndPrintMessage "Install develop dependencies"
   # update build details
   - ps: |
-      $releaseVersion = $null
-      # read release branch from package.json
-      $releaseBranch = node -p "require('./package.json').branch"
-      if (-not $releaseBranch) { $releaseBranch = "master" }
-      Add-AppveyorMessage "The release branch is $releaseBranch"
-      # get last tag on the release branch
-      git fetch --tags
-      $lastVersion = git tag -l --merged origin/$releaseBranch --sort=-taggerdate | Select-Object -Index 0  | %{$_ -replace "^v|@.+$",""}
-      if (-not $lastVersion) { $lastVersion = "$(node -p "require('./package.json').version")" }
-      Add-AppveyorMessage "The previous release branch is $lastVersion on $releaseBranch"
-      # update build version
-      Update-AppveyorBuild -Version "$releaseBranch@$lastVersion - $env:APPVEYOR_BUILD_NUMBER"
+      StartPrintMessage "Updating Build Details..."
+      $nextVersion = $null
+      $nextRelease = $null
+      # load the previous release version(tag) on the branch
+      PrintMessage "loading the previous release version..."
+      $previousVersion = Tag2Version $(LoadLastTag)
+      if (-not $previousVersion) { $previousVersion = "$(node -p "require('./package.json').version")" }
+      $previousRelease = "$env:APPVEYOR_REPO_BRANCH@$previousVersion"
+      PrintMessage "The previous release version is $previousVersion on $env:APPVEYOR_REPO_BRANCH"
+      # update the build version
+      Update-AppveyorBuild -Version "$previousRelease - $env:APPVEYOR_BUILD_NUMBER"
       # parse the build message
-      $test_message = "on $releaseBranch@$lastVersion"
-      if ($env:APPVEYOR_REPO_BRANCH -ne $releaseBranch) {
-        $test_message = "base $test_message"
-      }
+      $buildMessage = "Develop Test on $previousRelease"
       if ($env:APPVEYOR_PULL_REQUEST_NUMBER) {
         # build on request pull
-        $test_message = "Develop Test for RP($env:APPVEYOR_PULL_REQUEST_NUMBER) $test_message"
+        $buildMessage = "Develop Test for RP($env:APPVEYOR_PULL_REQUEST_NUMBER) on $previousRelease"
       } elseif ($env:APPVEYOR_REPO_TAG_NAME) {
         # build on tag
-        $test_message = "Release Test for $releaseBranch@$lastVersion"
+        $buildMessage = "Release Test for $previousRelease"
       } else {
-        $test_message = "Develop Test $test_message"
-        if ($env:APPVEYOR_REPO_BRANCH -eq $releaseBranch) {
-          # current branch is the release branch
-          # check the next release version
-          $prereleaseLog = npx cross-env prerelease=true semantic-release -d
-          if ($LastExitCode -ne 0) {
-            Add-AppveyorMessage "Check the next release version with error`:` $LastExitCode" -Category Warning
-          }
-          echo $prereleaseLog
-          if ($prereleaseLog -join "`n"  -match "The Next release version is ([^\r\n]+)")
-          {
-              $releaseVersion = $Matches[1]
-              $test_message = "Release $releaseBranch@$releaseVersion <- $lastVersion"
-              Add-AppveyorMessage "The next release version is $releaseVersion"
-          }
+        # check the next release version
+        PrintMessage "Checking next release version..."
+        $nextVersion = ParseNextVersion $(npx cross-env prerelease=true semantic-release -d) "Check the next release version with error`:` $LastExitCode"
+        if ($nextVersion) {
+          $nextRelease = "$env:APPVEYOR_REPO_BRANCH@$nextVersion"
+          $buildMessage = "Release $nextRelease <- $previousVersion"
+          PrintMessage "The next release version is $nextVersion on $env:APPVEYOR_REPO_BRANCH"
+        } else {
+          PrintMessage "No next release version"
         }
       }
+      PrintMessage $buildMessage
       # update build message
-      echo "$test_message"
-      Update-AppveyorBuild -Message "$test_message"
-      Add-AppveyorMessage "$test_message"
+      Update-AppveyorBuild -Message $buildMessage
+      EndPrintMessage "Updated Build Details"
 
 before_build:
-  - ps: Add-AppveyorMessage "Compiling..."
-  - ps: $timepoint = Get-Date
+  - ps: StartPrintMessage "Compiling..."
 
 build_script:
   - npm run package
 
 after_build:
-  - ps: Add-AppveyorMessage "Compile use $($(New-TimeSpan $timepoint).TotalSeconds)s"
+  - ps: EndPrintMessage "Compiled"
 
 before_test:
-  - ps: Add-AppveyorMessage "Running Tests..."
-  - ps: $timepoint = Get-Date
+  - ps: StartPrintMessage "Running Tests..."
 
 test_script:
   # test on nodejs
-  - ps: Add-AppveyorMessage "Running Tests on Node$(node --version)..."
-  - ps: $test_timepoint = Get-Date
+  - ps: StartPrintMessage "Running Tests on Node$(node --version)..."
   - npm run unit:node
-  - ps: Add-AppveyorMessage "Run Tests on Node$(node --version) use $($(New-TimeSpan $test_timepoint).TotalSeconds)s"
+  - ps: EndPrintMessage "Run Tests on Node$(node --version)"
   # test on browsers
-  - ps: Add-AppveyorMessage "Running Tests on IE8,IE9,Chrome by Karma..."
-  - ps: $test_timepoint = Get-Date
+  - ps: StartPrintMessage "Running Tests on IE8,IE9,Chrome by Karma..."
   - npm run unit:browser -- --browsers IE8,IE9,Chrome --single-run
-  - ps: Add-AppveyorMessage "Run Tests on IE8,IE9,Chrome by Karma use $($(New-TimeSpan $test_timepoint).TotalSeconds)s"
+  - ps: EndPrintMessage "Run Tests on IE8,IE9,Chrome by Karma"
   # test on lower browsers
-  - ps: Add-AppveyorMessage "Running Tests on IE6,IE7 by Karma(no-iframe)..."
-  - ps: $test_timepoint = Get-Date
+  - ps: StartPrintMessage "Running Tests on IE6,IE7 by Karma(no-iframe)..."
   - npm run unit:browser -- --browsers IE6,IE7 --single-run --no-iframe
-  - ps: Add-AppveyorMessage "Run Tests on IE6,IE7 by Karma(no-iframe) use $($(New-TimeSpan $test_timepoint).TotalSeconds)s"
+  - ps: EndPrintMessage "Run Tests on IE6,IE7 by Karma(no-iframe)"
 
 after_test:
-  - ps: Add-AppveyorMessage "Run Tests use $($(New-TimeSpan $timepoint).TotalSeconds)s"
+  - ps: EndPrintMessage "Run all Tests"
   # upload coverage
-  - ps: Add-AppveyorMessage "Uploading coverage by coveralls"
-  - cat coverage/*/lcov.info | coveralls
+  - ps: StartPrintMessage "Uploading coverage by codecov"
+  - cat coverage/*/lcov.info | codecov
+  - ps: EndPrintMessage "Uploaded coverage by codecov"
 
 deploy_script:
   - ps: |
-      if ($releaseVersion) {
+      if ($nextVersion) {
         # release
-        Add-AppveyorMessage "Releasing $releaseBranch@$releaseVersion <- $lastVersion..."
-        $timepoint = Get-Date
-
+        StartPrintMessage "Releasing $nextRelease <- $previousVersion..."
+        # read the package name of npm registry
         $package = node -p "require('./package.json').name"
+        $nextPackage = $null
         # do release
-        $log = npx semantic-release
-        if ($LastExitCode -ne 0) {
-          Add-AppveyorMessage "Release $releaseBranch@$releaseVersion <- $lastVersion with error`:` $LastExitCode" -Category Warning
-        }
-        echo $log
-        # load the release next verion
-        if ($log -join "`n"  -match "The Next release version is ([^\r\n]+)")
-        {
-          $releaseVersion = $Matches[1]
-          $msg = "Release $releaseBranch@$releaseVersion <- $lastVersion"
-          echo $msg
-          Update-AppveyorBuild -Message $msg
+        $nextVersion = ParseNextVersion $(npx semantic-release) "Release $nextRelease <- $previousVersion with error`:` $LastExitCode"
+        if ($nextVersion) {
+          $nextRelease = "$env:APPVEYOR_REPO_BRANCH@$nextVersion"
+          $nextPackage = "$package@$nextVersion"
+          Update-AppveyorBuild -Message "Release $nextRelease <- $previousVersion"
+          PrintMessage "Released $nextRelease <- $previousVersion"
+        } else {
+          PrintMessage "Release $nextRelease <- $previousVersion failed"
+          $host.SetShouldExit(-1)
         }
         # check the released tag
-        git fetch --tags
-        $nextTag = git tag -l --merged origin/$releaseBranch --sort=-taggerdate | Select-Object -Index 0
-        echo "next tag is $nextTag"
-        if ($releaseVersion -ne $($nextTag -replace "^v|@.+$",""))
-        {
+        PrintMessage "Checking the released tag on $nextRelease"
+        $nextTag = LoadLastTag
+        if ($nextVersion -ne $(Tag2Version $nextTag)) {
           # no release tag
-          $err = "Release $releaseBranch@$releaseVersion fail, can't find the git tag of $releaseVersion"
-          echo $err
-          Add-AppveyorMessage $err -Category Error
-          if ($(npm view $package@$releaseVersion version))
-          {
-            echo "rollback the npm package`:` $package@$releaseVersion"
-            npm unpublish $package@$releaseVersion
+          PrintMessage "Release $nextRelease fail, can't find the git tag of $nextVersion" -Category Error
+          if ($(npm view $nextPackage version)) {
+            PrintMessage "Rollback the npm package`:` $nextPackage"
+            npm unpublish $nextPackage
           }
           $host.SetShouldExit(-1)
         }
         # check the published package
-        elseif (-not $(npm view $package@$releaseVersion version))
-        {
+        if (-not $(npm view $nextPackage version)) {
           # no npm package
-          $err = "Release $releaseBranch@$releaseVersion failed, can't find the npm package $package@$releaseVersion"
-          echo $err
-          Add-AppveyorMessage $err -Category Error
-          echo "rollback the git tag`:` $nextTag"
+          PrintMessage "Release $nextRelease failed, can't find the npm package $nextPackage" -Category Error
+          PrintMessage "Rollback the git tag`:` $nextTag"
           git push --delete origin $nextTag
           $host.SetShouldExit(-1)
-        } else {
-          # release end
-          Add-AppveyorMessage "Released $releaseBranch@$releaseVersion <- $lastVersion, use $($(New-TimeSpan $timepoint).TotalSeconds)s"
         }
+        # release end
+        EndPrintMessage "Released $nextRelease <- $previousVersion"
       }

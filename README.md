@@ -22,8 +22,8 @@
 
 [ci]: https://ci.appveyor.com/project/tao-zeng/argilo/branch/dev
 [build-badge]: https://img.shields.io/appveyor/ci/tao-zeng/argilo/dev.svg
-[cover]: https://coveralls.io/github/tao-zeng/argilo?branch=dev
-[cover-badge]: https://img.shields.io/coveralls/github/tao-zeng/argilo/dev.svg
+[cover]: https://codecov.io/github/tao-zeng/argilo/branch/dev
+[cover-badge]: https://img.shields.io/codecov/c/github/tao-zeng/argilo/dev.svg
 
 [npm]: https://www.npmjs.com/package/argilo/v/latest
 [downloads-badge]: https://img.shields.io/npm/dt/argilo.svg
