@@ -3,7 +3,7 @@
  * @module observer
  * @author Tao Zeng <tao.zeng.zt@qq.com>
  * @created Tue Mar 19 2019 14:12:23 GMT+0800 (China Standard Time)
- * @modified Mon Apr 22 2019 18:28:04 GMT+0800 (China Standard Time)
+ * @modified Tue Apr 23 2019 18:13:32 GMT+0800 (China Standard Time)
  */
 
 import { IObserver, IWatcher, ARRAY_CHANGE, ObserverTarget, ARRAY_LENGTH } from './IObserver'
@@ -31,6 +31,9 @@ export default function(): ObservePolicy {
 						value = newValue
 					}
 				} else if (prop !== ARRAY_CHANGE && prop !== ARRAY_LENGTH) {
+					if (prop >= target[ARRAY_LENGTH]) {
+						return new Error(`index[${prop}] is not defined`)
+					}
 					setter = (newValue: any) => {
 						watcher.notify(value)
 						observer.notify(ARRAY_CHANGE, target)

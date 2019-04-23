@@ -1,11 +1,10 @@
 {
 	"name": "argilo",
 	"version": "1.0.0",
-	"branch": "master",
+	"description": "",
 	"main": "dist/argilo.js",
 	"module": "dist/argilo.esm.js",
 	"types": "dist/argilo.d.ts",
-	"description": "",
 	"homepage": "https://github.com/tao-zeng/argilo",
 	"author": "Tao Zeng <tao.zeng.zt@qq.com>",
 	"bugs": {

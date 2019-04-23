@@ -102,7 +102,7 @@ describe('observer', function() {
 	function observeSimpleObject(o: SimpleObject, end: () => void) {
 		new ObserveChain(o, [
 			{
-				name: 'update properties',
+				name: '1. update properties',
 				setup(o, c) {
 					c.collect('name', 'email', 'age')
 					o.name = 'Paulxx'
@@ -115,7 +115,7 @@ describe('observer', function() {
 				}
 			},
 			{
-				name: 'rollback update properties',
+				name: '2. rollback update properties',
 				setup(o, c) {
 					o.name = 'Mary'
 					o.email = 'mary@domain.com'
@@ -130,7 +130,7 @@ describe('observer', function() {
 				}
 			},
 			{
-				name: 'unobserve email',
+				name: '3. unobserve email',
 				setup(o, c) {
 					o.name = 'Mary2'
 					o.name = 'Mary'
@@ -142,7 +142,7 @@ describe('observer', function() {
 				}
 			},
 			{
-				name: 'unobserve all',
+				name: '4. unobserve all',
 				setup(o, c) {
 					c.uncollect()
 					o.name = 'Paul'
@@ -154,7 +154,7 @@ describe('observer', function() {
 				}
 			},
 			{
-				name: 'reset object states',
+				name: '5. reset object states',
 				setup(o, c) {
 					assign(o, simpleObject)
 				}
@@ -224,7 +224,7 @@ describe('observer', function() {
 			[
 				{
 					// [2]
-					name: 'set index',
+					name: '1. set index => [2]',
 					setup(o, c) {
 						c.collect('[0]', 'length', '$change')
 						o[0]++
@@ -235,27 +235,27 @@ describe('observer', function() {
 								? {}
 								: {
 										'[0]': [2, 1],
-										$change: [o, o]
+										$change: [c.ob.proxy, c.ob.proxy]
 								  }
 						)
 					}
 				},
 				{
 					// [2,1]
-					name: 'array.push',
+					name: '2. array.push => [2,1]',
 					setup(o, c) {
 						o.push(1)
 					},
 					done(o, c) {
 						c.expect({
 							length: [2, 1],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				{
 					// [3,2,1]
-					name: 'array.unshift',
+					name: '3. array.unshift => [3,2,1]',
 					setup(o, c) {
 						o.unshift(3)
 					},
@@ -263,39 +263,39 @@ describe('observer', function() {
 						c.expect({
 							'[0]': [3, 2],
 							length: [3, 2],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				{
 					// [4,2,1]
-					name: 'array.splice 0',
+					name: '4. array.splice 0 => [4,2,1]',
 					setup(o, c) {
 						o.splice(0, 1, 4)
 					},
 					done(o, c) {
 						c.expect({
 							'[0]': [4, 3],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				{
 					// [4,3,2,1]
-					name: 'array.splice +1',
+					name: '5. array.splice +1 => [4,3,2,1]',
 					setup(o, c) {
 						o.splice(1, 0, 3)
 					},
 					done(o, c) {
 						c.expect({
 							length: [4, 3],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				{
 					// [3,2,1]
-					name: 'array.splice -1',
+					name: '6. array.splice -1 => [3,2,1]',
 					setup(o, c) {
 						o.splice(0, 1)
 					},
@@ -303,26 +303,26 @@ describe('observer', function() {
 						c.expect({
 							'[0]': [3, 4],
 							length: [3, 4],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				{
 					// [3,2]
-					name: 'array.pop',
+					name: '7. array.pop => [3,2]',
 					setup(o, c) {
 						o.pop()
 					},
 					done(o, c) {
 						c.expect({
 							length: [2, 3],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				{
 					// [2]
-					name: 'array.shift',
+					name: '8. array.shift => [2]',
 					setup(o, c) {
 						o.shift()
 					},
@@ -330,13 +330,13 @@ describe('observer', function() {
 						c.expect({
 							'[0]': [2, 3],
 							length: [1, 2],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				{
 					// [2,3,4,5]
-					name: 'set out index',
+					name: '9. set out index => [2,3,4,5]',
 					setup(o, c) {
 						o[1] = 3
 						o[2] = 4
@@ -347,7 +347,7 @@ describe('observer', function() {
 							es6proxy
 								? {
 										length: [4, 1],
-										$change: [o, o]
+										$change: [c.ob.proxy, c.ob.proxy]
 								  }
 								: {}
 						)
@@ -355,40 +355,40 @@ describe('observer', function() {
 				},
 				{
 					// [5,4,3,2]
-					name: 'array.sort',
+					name: '10. array.sort => [5,4,3,2]',
 					setup(o, c) {
 						o.sort((a, b) => b - a)
 					},
 					done(o, c) {
 						c.expect({
 							'[0]': [5, 2],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				[].reverse && {
 					// [2,3,4,5]
-					name: 'array.reverse',
+					name: '11. array.reverse => [2,3,4,5]',
 					setup(o, c) {
 						o.reverse()
 					},
 					done(o, c) {
 						c.expect({
 							'[0]': [2, 5],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				},
 				[].fill && {
 					// [0,0,0,0]
-					name: 'array.fill',
+					name: '12. array.fill => [0,0,0,0]',
 					setup(o, c) {
 						o.fill(0)
 					},
 					done(o, c) {
 						c.expect({
 							'[0]': [0, 2],
-							$change: [o, o]
+							$change: [c.ob.proxy, c.ob.proxy]
 						})
 					}
 				}
@@ -407,7 +407,7 @@ describe('observer', function() {
 		latest: string
 		versions: ({
 			version: string
-			publish: Date
+			publish: string
 		})[]
 		dependencies: {
 			[name: string]: {
@@ -419,7 +419,12 @@ describe('observer', function() {
 	const complexObject: ComplexObject = {
 		name: 'argilo',
 		latest: null,
-		versions: [],
+		versions: [
+			{
+				version: '1.0.0',
+				publish: '2019-04-22T00:00:00.000Z'
+			}
+		],
 		dependencies: {
 			lodash: {
 				name: 'lodash',
@@ -429,7 +434,7 @@ describe('observer', function() {
 	}
 	function cloneComplexObject() {
 		return assign({}, complexObject, {
-			versions: [],
+			versions: complexObject.versions.slice(),
 			dependencies: {
 				lodash: assign({}, complexObject.dependencies.lodash)
 			}
@@ -439,7 +444,7 @@ describe('observer', function() {
 	function observeComplexObject(o: ComplexObject, end: () => void) {
 		new ObserveChain(o, [
 			{
-				name: 'listen',
+				name: '0. listen',
 				setup(o, c) {
 					c.collect(
 						'name',
@@ -460,118 +465,171 @@ describe('observer', function() {
 				}
 			},
 			{
-				name: 'change in array property (add Version: 1.0.0)',
-				version: {
-					version: '1.0.0',
-					publish: new Date(1555898400000)
-				},
-				setup(o, c) {
-					o.versions.push(assign({}, this.version))
-				},
-				done(o, c) {
-					c.expect({
-						'versions.$change': [[this.version], [this.version]],
-						'versions.length': [1, 0],
-						'versions[0].version': ['1.0.0', undefined],
-						'versions[0].publish': [new Date(1555898400000), undefined]
-					})
-				}
-			},
-			{
-				name: 'sync the latest: 1.0.0',
-				done(o, c) {
-					c.expect({
-						latest: ['1.0.0', null]
-					})
-				}
-			},
-			{
-				name: 'set array property (set versions: [1.0.1, 1.0.0])',
-				version: {
-					version: '1.0.1',
-					publish: new Date(1555927200000)
-				},
-				oldVersion: {
-					version: '1.0.0',
-					publish: new Date(1555898400000)
-				},
-				setup(o, c) {
-					o.versions = [assign({}, this.version)].concat(o.versions)
-				},
-				done(o, c) {
-					c.expect({
-						'versions': [[this.version, this.oldVersion], [this.oldVersion]],
-						'versions.$change': [[this.version, this.oldVersion], [this.oldVersion]],
-						'versions.length': [2, 1],
-						'versions[0].version': ['1.0.1', '1.0.0'],
-						'versions[0].publish': [new Date(1555927200000), new Date(1555898400000)]
-					})
-				}
-			},
-			{
-				name: 'sync the latest: 1.0.1',
-				done(o, c) {
-					c.expect({
-						latest: ['1.0.1', '1.0.0']
-					})
-				}
-			},
-			{
-				name: 'set array property with same object (reset versions)',
+				name: '1. change in array property (add Version: 1.0.1)',
 				versions: [
 					{
 						version: '1.0.1',
-						publish: new Date(1555927200000)
+						publish: '2019-04-22T01:00:00.000Z'
 					},
 					{
 						version: '1.0.0',
-						publish: new Date(1555898400000)
+						publish: '2019-04-22T00:00:00.000Z'
 					}
 				],
 				setup(o, c) {
+					this.expectVersions = proxy(o.versions)
+					o.versions.unshift(assign({}, this.versions[0]))
+				},
+				done(o, c) {
+					c.expect({
+						'versions.$change': [this.expectVersions, this.expectVersions],
+						'versions.length': [2, 1],
+						'versions[0].version': ['1.0.1', '1.0.0'],
+						'versions[0].publish': ['2019-04-22T01:00:00.000Z', '2019-04-22T00:00:00.000Z']
+					})
+					c.expect(
+						{
+							'versions.$change': [this.versions, this.versions]
+						},
+						true
+					)
+				}
+			},
+			{
+				name: '1.1. sync the latest: 1.0.1',
+				done(o, c) {
+					c.expect({
+						latest: ['1.0.1', null]
+					})
+				}
+			},
+			{
+				name: '2. set array property (set versions: [1.0.2, 1.0.1, 1.0.0])',
+				versions: [
+					{
+						version: '1.0.2',
+						publish: '2019-04-22T02:00:00.000Z'
+					},
+					{
+						version: '1.0.1',
+						publish: '2019-04-22T01:00:00.000Z'
+					},
+					{
+						version: '1.0.0',
+						publish: '2019-04-22T00:00:00.000Z'
+					}
+				],
+				setup(o, c) {
+					this.expectVersions = [[assign({}, this.versions[0])].concat(o.versions), proxy(o.versions)]
+					o.versions = this.expectVersions[0]
+				},
+				done(o, c) {
+					this.expectVersions[0] = proxy(this.expectVersions[0])
+					c.expect({
+						versions: this.expectVersions,
+						'versions.$change': this.expectVersions,
+						'versions.length': [3, 2],
+						'versions[0].version': ['1.0.2', '1.0.1'],
+						'versions[0].publish': ['2019-04-22T02:00:00.000Z', '2019-04-22T01:00:00.000Z']
+					})
+					c.expect(
+						{
+							versions: [this.versions, this.versions.slice(1)],
+							'versions.$change': [this.versions, this.versions.slice(1)]
+						},
+						true
+					)
+				}
+			},
+			{
+				name: '2.1. sync the latest: 1.0.2',
+				done(o, c) {
+					c.expect({
+						latest: ['1.0.2', '1.0.1']
+					})
+				}
+			},
+			{
+				name: '3. set array property with same object (reset versions)',
+				versions: [
+					{
+						version: '1.0.2',
+						publish: '2019-04-22T02:00:00.000Z'
+					},
+					{
+						version: '1.0.1',
+						publish: '2019-04-22T01:00:00.000Z'
+					},
+					{
+						version: '1.0.0',
+						publish: '2019-04-22T00:00:00.000Z'
+					}
+				],
+				setup(o, c) {
+					this.expectVersions = [proxy(o.versions), proxy(o.versions)]
 					o.versions = o.versions
 				},
 				done(o, c) {
 					c.expect({
-						versions: [this.versions, this.versions],
-						'versions.$change': [this.versions, this.versions]
+						versions: this.expectVersions,
+						'versions.$change': this.expectVersions
 					})
+					c.expect(
+						{
+							versions: [this.versions, this.versions],
+							'versions.$change': [this.versions, this.versions]
+						},
+						true
+					)
 				}
 			},
 			{
-				name: 'clean array property (clean versions)',
+				name: '4. clean array property (clean versions)',
+				oldVersions: [
+					{
+						version: '1.0.2',
+						publish: '2019-04-22T02:00:00.000Z'
+					},
+					{
+						version: '1.0.1',
+						publish: '2019-04-22T01:00:00.000Z'
+					},
+					{
+						version: '1.0.0',
+						publish: '2019-04-22T00:00:00.000Z'
+					}
+				],
 				setup(o, c) {
+					this.expectVersion = proxy(o.versions)
 					o.versions = null
 				},
 				done(o, c) {
-					const oldVersions = [
-						{
-							version: '1.0.1',
-							publish: new Date(1555927200000)
-						},
-						{
-							version: '1.0.0',
-							publish: new Date(1555898400000)
-						}
-					]
 					c.expect({
-						versions: [null, oldVersions],
-						'versions.$change': [undefined, oldVersions],
-						'versions[0].version': [undefined, '1.0.1'],
-						'versions[0].publish': [undefined, new Date(1555927200000)]
+						versions: [null, this.expectVersion],
+						'versions.$change': [undefined, this.expectVersion],
+						'versions.length': [undefined, 3],
+						'versions[0].version': [undefined, '1.0.2'],
+						'versions[0].publish': [undefined, '2019-04-22T02:00:00.000Z']
 					})
+					c.expect(
+						{
+							versions: [null, this.oldVersions],
+							'versions.$change': [undefined, this.oldVersions]
+						},
+						true
+					)
 				}
 			},
 			{
-				name: 'sync the latest: undefined',
+				name: '4.1. sync the latest: undefined',
 				done(o, c) {
 					c.expect({
-						latest: [undefined, '1.0.1']
+						latest: [undefined, '1.0.2']
 					})
 				}
 			},
 			{
-				name: 'change in object property (update lodash dependency)',
+				name: '5. change in object property (update lodash dependency)',
 				setup(o, c) {
 					o.dependencies.lodash.version = '4.17.9'
 				},
@@ -582,7 +640,7 @@ describe('observer', function() {
 				}
 			},
 			{
-				name: 'set object property (set dependency)',
+				name: '6. set object property (set dependency)',
 				oldDep: {
 					lodash: {
 						name: 'lodash',
@@ -596,19 +654,31 @@ describe('observer', function() {
 					}
 				},
 				setup(o, c) {
-					o.dependencies = {
-						lodash: {
-							name: 'lodash',
-							version: '4.17.10'
-						}
-					}
+					this.expectDeps = [
+						{
+							lodash: {
+								name: 'lodash',
+								version: '4.17.10'
+							}
+						},
+						proxy(o.dependencies)
+					]
+					o.dependencies = this.expectDeps[0]
 				},
 				done(o, c) {
+					this.expectDeps[0] = proxy(this.expectDeps[0])
 					c.expect({
-						dependencies: [this.dep, this.oldDep],
-						'dependencies.lodash': [this.dep.lodash, this.oldDep.lodash],
+						dependencies: this.expectDeps,
+						'dependencies.lodash': [proxy(this.expectDeps[0].lodash), proxy(this.expectDeps[1].lodash)],
 						'dependencies.lodash.version': ['4.17.10', '4.17.9']
 					})
+					c.expect(
+						{
+							dependencies: [this.dep, this.oldDep],
+							'dependencies.lodash': [this.dep.lodash, this.oldDep.lodash]
+						},
+						true
+					)
 				}
 			}
 		]).run(end)
@@ -633,7 +703,7 @@ class ObserveChain<T extends ObserverTarget> {
 			called: number
 			cb: ObserverCallback<T>
 			path: string
-			dirties: [any, any][]
+			dirties: [any, any, boolean][]
 			listenId: string
 		}
 	}
@@ -698,7 +768,17 @@ class ObserveChain<T extends ObserverTarget> {
 			step.setup && step.setup(this.ob.proxy, this)
 
 			nextTick(() => {
-				step.done && step.done(this.ob.proxy, this, mapObj(this.ctxs, ctx => ctx.dirties[stepIdx]))
+				step.done &&
+					step.done(
+						this.ob.proxy,
+						this,
+						mapObj(this.ctxs, ctx => {
+							const d = ctx.dirties[stepIdx]
+							return d && ([d[0], d[1]] as [any, any])
+						})
+					)
+
+				this.checkCollecteds()
 
 				this.stepIdx++
 
@@ -720,7 +800,7 @@ class ObserveChain<T extends ObserverTarget> {
 	stepLabel() {
 		const { stepIdx } = this
 		const step = this.steps[stepIdx]
-		return step && step.name ? stepIdx + ': ' + step.name : stepIdx
+		return step && step.name ? step.name : stepIdx + 1
 	}
 	collectPath(path: string) {
 		const chain = this
@@ -762,7 +842,7 @@ class ObserveChain<T extends ObserverTarget> {
 							stepLabel,
 							ctx.path
 						)
-						ctx.dirties[stepIdx] = [value, original]
+						ctx.dirties[stepIdx] = [value, original, false]
 						ctx.called++
 
 						console.log(
@@ -781,9 +861,14 @@ class ObserveChain<T extends ObserverTarget> {
 				})
 
 		if (!ctx.listenId) {
-			ctx.listenId = __p__++ & 1 ? observe(o, path, ctx.cb, ctx) : ob.observe(path, ctx.cb, ctx)
-
 			const stepLabel = this.stepLabel()
+
+			try {
+				ctx.listenId = __p__++ & 1 ? observe(o, path, ctx.cb, ctx) : ob.observe(path, ctx.cb, ctx)
+			} catch (e) {
+				e.message = `[${stepLabel}][${path}]: observe failed, ${e.message}`
+				throw e
+			}
 			assert.is(
 				observedId(o, path, ctx.listenId),
 				`[{}][{}]: observe failed, listen-id: {}`,
@@ -845,10 +930,11 @@ class ObserveChain<T extends ObserverTarget> {
 			ctx.listenId = null
 		}
 	}
-	expect(expect: { [path: string]: [any, any?] }) {
+	expect(expect: { [path: string]: [any, any?] }, deep?: boolean) {
 		const { ctxs, stepIdx } = this
 		const stepLabel = this.stepLabel()
 		expect = expect || {}
+		const EQ = deep ? 'eql' : 'eq'
 		try {
 			eachObj(expect, (e, path) => {
 				const ctx = ctxs[path],
@@ -861,21 +947,34 @@ class ObserveChain<T extends ObserverTarget> {
 						path,
 						e
 					)
-					assert.eql(d[0], e[0], '[{}][{}]: expect dirty value: {0j} to {1j}', stepLabel, path)
+					assert[EQ](d[0], e[0], '[{}][{}]: expect dirty value: {0j} to {1j}', stepLabel, path)
 					if (e.length > 1)
-						assert.eql(d[1], e[1], '[{}][{}]: expect origin value: {0j} to {1j}', stepLabel, path)
+						assert[EQ](d[1], e[1], '[{}][{}]: expect origin value: {0j} to {1j}', stepLabel, path)
 				}
-			})
-
-			eachObj(ctxs, (ctx, path) => {
-				const e = expect[path],
-					d = ctx.dirties[stepIdx]
-				if (!e)
-					assert.not(d, '[{}][{}]: collected the dirty, value: {0{[0]}j}, origin: {0{[1]}j}', stepLabel, path)
+				d && (d[2] = true)
 			})
 		} catch (e) {
 			throw popErrStack(e, 3)
 		}
 		return this
+	}
+	checkCollecteds() {
+		const { ctxs, stepIdx } = this
+		const stepLabel = this.stepLabel()
+
+		try {
+			eachObj(ctxs, (ctx, path) => {
+				const d = ctx.dirties[stepIdx]
+				assert.is(
+					!d || d[2],
+					'[{}][{}]: collected the dirty, value: {{[0]}j}, origin: {@{[1]}j}',
+					stepLabel,
+					path,
+					d
+				)
+			})
+		} catch (e) {
+			throw popErrStack(e, 3)
+		}
 	}
 }

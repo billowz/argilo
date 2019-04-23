@@ -2,7 +2,7 @@
  * @module observer
  * @author Tao Zeng <tao.zeng.zt@qq.com>
  * @created Wed Dec 26 2018 13:59:10 GMT+0800 (China Standard Time)
- * @modified Mon Apr 22 2019 18:38:12 GMT+0800 (China Standard Time)
+ * @modified Tue Apr 23 2019 17:13:10 GMT+0800 (China Standard Time)
  */
 
 import { ObserverTarget, IWatcher, OBSERVER_KEY, IObserver, ARRAY_CHANGE, ObserverCallback } from './IObserver'
@@ -92,7 +92,7 @@ class Topic {
 	__original: any
 
 	// collected dirty value: [new value, original value, force notify]
-	__dirty: [any, any, boolean]
+	__dirty: [any, any]
 
 	// subtopics
 	__subs: Topic[]
@@ -346,7 +346,7 @@ class Topic {
 
 			this.__original = V
 
-			observer && this.____collect(observer, observer.target, original, false)
+			observer && this.____collect(observer, observer.target, original)
 		}
 		// this topic has been collected, retains its dirty value
 	}
@@ -371,19 +371,17 @@ class Topic {
 	 * @param original 	original value of this topic
 	 * @param force  	force notify
 	 */
-	private ____collect(observer: Observer<any>, target: any, original: any, force: boolean) {
+	private ____collect(observer: Observer<any>, target: any, original: any) {
 		const { __state: flags, __prop: prop } = this
 		let dirty: [any, any, boolean?],
 			subTarget: any = V // lazy load the sub-target
 
 		if (flags & TOPIC_LISTEN_FLAG) {
 			if (!(dirty = this.__dirty)) {
-				this.__dirty = dirty = [, original, force]
+				this.__dirty = dirty = [, original]
 				dirtyQueue.push(this)
-			} else if (force) {
-				dirty[2] = force
-				// if this topic has been changed and collected, retains its original value
 			}
+			// if this topic has been changed and collected, retains its original value
 			// set the new value
 			dirty[0] = observer && isArrayChangeProp(observer, prop) ? target : (subTarget = getValue(target, prop))
 		}
@@ -446,7 +444,7 @@ class Topic {
 						sub.__original = V
 					}
 
-					sub.____collect(subObserver, subTarget, subOriginal, orgSubObserver != subObserver)
+					sub.____collect(subObserver, subTarget, subOriginal)
 				}
 			}
 		} else if (dirty && proxyEnable) {
@@ -504,7 +502,7 @@ function notify() {
 		path: string[],
 		value: any,
 		original: any,
-		dirty: [any, any, boolean],
+		dirty: [any, any],
 		i = 0
 
 	for (; i < l; i++) {
@@ -515,7 +513,7 @@ function notify() {
 
 		topic.__dirty = null // clean the dirty
 
-		if (dirty[2] || value !== original || !isPrimitive(value)) {
+		if (value !== original || !isPrimitive(value)) {
 			// real dirty
 			owner = topic.__owner
 			path = topic.__path

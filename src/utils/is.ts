@@ -2,7 +2,7 @@
  * @module utils
  * @author Tao Zeng <tao.zeng.zt@qq.com>
  * @created Mon Dec 11 2017 13:57:32 GMT+0800 (China Standard Time)
- * @modified Wed Apr 10 2019 13:55:08 GMT+0800 (China Standard Time)
+ * @modified Tue Apr 23 2019 17:11:05 GMT+0800 (China Standard Time)
  */
 
 import { P_CTOR, GLOBAL, T_BOOL, T_FN, T_NUM, T_STRING, T_UNDEF } from './consts'
@@ -81,9 +81,7 @@ export function isInt(o: any): boolean {
  * - function
  */
 export function isPrimitive(o: any): boolean {
-	if (o === undefined || o === null) {
-		return true
-	}
+	if (!o) return true
 	switch (typeof o) {
 		case T_BOOL:
 		case T_NUM:
