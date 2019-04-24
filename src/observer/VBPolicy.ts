@@ -3,7 +3,7 @@
  * @module observer
  * @author Tao Zeng <tao.zeng.zt@qq.com>
  * @created Tue Mar 19 2019 14:12:23 GMT+0800 (China Standard Time)
- * @modified Mon Apr 22 2019 18:27:18 GMT+0800 (China Standard Time)
+ * @modified Wed Apr 24 2019 19:36:45 GMT+0800 (China Standard Time)
  */
 import { ObserverTarget, IWatcher, IObserver } from './IObserver'
 import { ObservePolicy } from './ObservePolicy'
@@ -19,7 +19,7 @@ export default function(): ObservePolicy {
 		try {
 			execScript(['Function parseVB(code)', '\tExecuteGlobal(code)', 'End Function'].join('\n'), 'VBScript')
 
-			addDKeys(VBPROXY_KEY, VBPROXY_CTOR_KEY)
+			addDKeys(VBPROXY_KEY, VBPROXY_CTOR_KEY, 'toJSON')
 
 			return {
 				__name: 'VBProxy',
@@ -39,8 +39,14 @@ export default function(): ObservePolicy {
 	}
 }
 
+function mkToJSON(source: any) {
+	if (!source.toJSON)
+		source.toJSON = function() {
+			return source
+		}
+}
 export class VBProxy<T extends {}> {
-	private readonly __source: T
+	private readonly source: T
 	/**
 	 * function property map
 	 * 	- key: property name
@@ -60,6 +66,7 @@ export class VBProxy<T extends {}> {
 			i = 0,
 			j = 0
 
+		mkToJSON(source)
 		for (prop in source) {
 			if (!isKey(prop)) {
 				propMap[prop] = true
@@ -76,7 +83,7 @@ export class VBProxy<T extends {}> {
 			fns[prop] = [, source[prop]]
 		}
 
-		this.__source = source
+		this.source = source
 		this.__observer = observer
 		this.__proxy = proxy
 		this.__fns = fns
@@ -85,7 +92,7 @@ export class VBProxy<T extends {}> {
 	}
 
 	set(prop: string, value: any) {
-		const { __source: source, __fns: fns } = this
+		const { source, __fns: fns } = this
 		if (isFn(value)) {
 			fns[prop] = [, value]
 		} else if (fns[prop]) {
@@ -97,8 +104,9 @@ export class VBProxy<T extends {}> {
 
 	get(prop: string) {
 		const fn = this.__fns[prop]
-		return fn ? fn[0] || (fn[0] = fn[1].bind(this.__proxy)) : this.__source[prop]
+		return fn ? fn[0] || (fn[0] = fn[1].bind(this.__proxy)) : this.source[prop]
 	}
+	toJSON() {}
 }
 
 function applyProps(props: string[], propMap: { [key: string]: boolean }, applyProps: string[]) {
@@ -126,7 +134,8 @@ export const VBPROXY_KEY = '__vbclass_binding__',
 		'propertyIsEnumerable',
 		'toLocaleString',
 		'toString',
-		'valueOf'
+		'valueOf',
+		'toJSON'
 	]
 
 const CONSTRUCTOR_SCRIPT = `

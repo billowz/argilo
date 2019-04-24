@@ -844,16 +844,19 @@ class ObserveChain<T extends ObserverTarget> {
 						)
 						ctx.dirties[stepIdx] = [value, original, false]
 						ctx.called++
-
-						console.log(
-							format(
-								`[{}][{}]: collected dirty, value: {j}, origin: {j}`,
-								stepLabel,
-								ctx.path,
-								value,
-								original
+						try {
+							console.log(
+								format(
+									`[{}][{}]: collected dirty, value: {j}, origin: {j}`,
+									stepLabel,
+									ctx.path,
+									value,
+									original
+								)
 							)
-						)
+						} catch (e) {
+							// TODO VBProxy not work with json3
+						}
 					},
 					path,
 					dirties: [],
