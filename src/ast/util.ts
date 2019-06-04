@@ -1,11 +1,10 @@
 /**
- * utilsities for ast builder
- *
  * @module utils/AST
- * @author Tao Zeng (tao.zeng.zt@qq.com)
- * @created 2018-11-09 13:22:51
- * @modified 2018-11-09 13:22:51 by Tao Zeng (tao.zeng.zt@qq.com)
+ * @author Billow Z <billowz@hotmail.com>
+ * @created 2019-06-04T15:12:41.726Z+08:00
+ * @modified 2019-06-04T15:30:06.041Z+08:00
  */
+
 import { charCode, isStr, isArray, isInt, isNum } from '../utils'
 
 export function genCharCodes(start: number | string, end: number | string, ignoreCase?: boolean) {

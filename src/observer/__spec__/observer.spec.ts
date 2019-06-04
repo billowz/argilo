@@ -795,7 +795,7 @@ class ObserveChain<T extends ObserverTarget> {
 	}
 	uncollect(...paths: string[]): void
 	uncollect() {
-		eachArray(arguments.length ? arguments : keys(this.ctxs), path => this.uncollectPath(path))
+		eachArray(arguments.length ? arguments : keys(this.ctxs), (path: any) => this.uncollectPath(path))
 	}
 	stepLabel() {
 		const { stepIdx } = this

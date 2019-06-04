@@ -1,6 +1,6 @@
 /**
  * @module observer
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Thu Apr 04 2019 20:42:20 GMT+0800 (China Standard Time)
  * @modified Mon Apr 15 2019 16:30:29 GMT+0800 (China Standard Time)
  */

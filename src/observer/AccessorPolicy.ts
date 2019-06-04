@@ -1,7 +1,7 @@
 /**
  * Observe implementation on the Object.defineProperty of ES5 or `__defineGetter__` and `__defineSetter__`
  * @module observer
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Tue Mar 19 2019 14:12:23 GMT+0800 (China Standard Time)
  * @modified Tue Apr 23 2019 18:13:32 GMT+0800 (China Standard Time)
  */
@@ -14,7 +14,7 @@ import { applyArrayHooks } from './arrayHook'
 /**
  * @ignore
  */
-export default function(): ObservePolicy {
+export default function accessorPolicy(): ObservePolicy {
 	if (propAccessor)
 		return {
 			__name: 'Accessor',

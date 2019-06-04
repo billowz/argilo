@@ -1,7 +1,7 @@
 /**
  * Observe implementation on the Proxy of ES6
  * @module observer
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Tue Mar 19 2019 14:12:23 GMT+0800 (China Standard Time)
  * @modified Tue Apr 23 2019 18:43:29 GMT+0800 (China Standard Time)
  */

@@ -1,6 +1,6 @@
 /**
  * @module assert
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Wed Nov 28 2018 11:01:45 GMT+0800 (China Standard Time)
  * @modified Thu Apr 11 2019 13:49:48 GMT+0800 (China Standard Time)
  */

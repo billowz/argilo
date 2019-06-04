@@ -1,3 +1,10 @@
+/**
+ * @module observer
+ * @author Billow Z <billowz@hotmail.com>
+ * @created 2019-06-04T15:12:41.739Z+08:00
+ * @modified 2019-06-04T15:12:41.739Z+08:00
+ */
+
 import { ObserverTarget, IObserver, IWatcher } from './IObserver'
 
 /**

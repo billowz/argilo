@@ -1,6 +1,6 @@
 /**
  * @module utils/path
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Fri Nov 30 2018 14:41:02 GMT+0800 (China Standard Time)
  * @modified Mon Apr 08 2019 13:47:29 GMT+0800 (China Standard Time)
  */

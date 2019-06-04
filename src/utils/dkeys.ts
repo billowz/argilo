@@ -1,6 +1,6 @@
 /**
  * @module utils/dkeys
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Mon Mar 11 2019 17:22:13 GMT+0800 (China Standard Time)
  * @modified Sat Mar 23 2019 17:42:04 GMT+0800 (China Standard Time)
  */

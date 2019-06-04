@@ -1,7 +1,7 @@
 /**
  *
  * @module utils/AST
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Tue Dec 11 2018 15:36:42 GMT+0800 (China Standard Time)
  * @modified Mon Apr 08 2019 13:57:09 GMT+0800 (China Standard Time)
  */

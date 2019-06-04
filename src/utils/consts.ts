@@ -1,9 +1,8 @@
 /**
- *
  * @module utils
- * @author Tao Zeng (tao.zeng.zt@qq.com)
- * @created 2018-11-09 15:23:35
- * @modified 2018-11-09 15:23:35 by Tao Zeng (tao.zeng.zt@qq.com)
+ * @author Billow Z <billowz@hotmail.com>
+ * @created 2019-06-04T15:12:41.779Z+08:00
+ * @modified 2019-06-04T15:12:41.779Z+08:00
  */
 
 export const P_CTOR = 'constructor'

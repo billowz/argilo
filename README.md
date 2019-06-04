@@ -9,7 +9,7 @@
 
 # Argilo
 
-[![Build][build-badge]][ci]
+[![Appveyor][appveyor-badge]][appveyor]
 [![Coverage][cover-badge]][cover]
 <br/>
 [![Version][version-badge]][npm]
@@ -20,10 +20,11 @@
 
 [MIT](http://opensource.org/licenses/MIT)
 
-[ci]: https://ci.appveyor.com/project/tao-zeng/argilo/branch/dev
-[build-badge]: https://img.shields.io/appveyor/ci/tao-zeng/argilo/dev.svg
-[cover]: https://codecov.io/github/tao-zeng/argilo/branch/dev
-[cover-badge]: https://img.shields.io/codecov/c/github/tao-zeng/argilo/dev.svg
+[appveyor]: https://ci.appveyor.com/project/billowz/argilo/branch/dev
+[appveyor-badge]: https://img.shields.io/appveyor/ci/billowz/argilo/dev.svg
+
+[cover]: https://codecov.io/github/billowz/argilo/branch/dev
+[cover-badge]: https://img.shields.io/codecov/c/github/billowz/argilo/dev.svg
 
 [npm]: https://www.npmjs.com/package/argilo/v/latest
 [downloads-badge]: https://img.shields.io/npm/dt/argilo.svg

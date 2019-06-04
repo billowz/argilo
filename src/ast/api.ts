@@ -1,7 +1,7 @@
 /**
  * AST Parser API
  * @module utils/AST
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Tue Nov 06 2018 10:58:52 GMT+0800 (China Standard Time)
  * @modified Thu Apr 04 2019 19:59:23 GMT+0800 (China Standard Time)
  */

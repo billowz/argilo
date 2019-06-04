@@ -1,7 +1,7 @@
 /**
  * Observe implementation on the VBScript of MSIE
  * @module observer
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Tue Mar 19 2019 14:12:23 GMT+0800 (China Standard Time)
  * @modified Wed Apr 24 2019 19:36:45 GMT+0800 (China Standard Time)
  */

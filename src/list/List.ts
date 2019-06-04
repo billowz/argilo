@@ -1,7 +1,7 @@
 /**
  * Double Linked List
  * @module utils/list
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Mon Dec 11 2017 14:35:32 GMT+0800 (China Standard Time)
  * @modified Mon Apr 08 2019 18:28:27 GMT+0800 (China Standard Time)
  */

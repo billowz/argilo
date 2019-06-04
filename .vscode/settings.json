@@ -16,7 +16,20 @@
 	"topper.lastModified": "@modified",
 	"topper.headerTemplates": [
 		{
-			"defaultCStyled": {
+			"typescript": {
+				"headerBegin": "/**",
+				"headerPrefix": " *",
+				"headerEnd": " */",
+				"template": [
+					"${headerBegin}",
+					"${headerPrefix} ",
+					"${headerPrefix} @author ${author}",
+					"${headerPrefix} @created ${createdDate}",
+					"${headerPrefix} @modified ${lastModifiedDate}",
+					"${headerEnd}"
+				]
+			},
+			"javascript": {
 				"headerBegin": "/**",
 				"headerPrefix": " *",
 				"headerEnd": " */",

@@ -1,7 +1,7 @@
 /**
  * Object.assign shim
  * @module utils
- * @author Tao Zeng <tao.zeng.zt@qq.com>
+ * @author Billow Z <billowz@hotmail.com>
  * @created Wed Jul 25 2018 15:22:13 GMT+0800 (China Standard Time)
  * @modified Mon Apr 08 2019 14:11:20 GMT+0800 (China Standard Time)
  */
