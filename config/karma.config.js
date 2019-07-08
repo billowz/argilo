@@ -20,7 +20,8 @@ const polyfills = [
 ]
 
 module.exports = function(config) {
-	const coverage = typeof config.coverage === 'string' ? config.coverage.split(/\s*,\s*/g) : config.coverage && ['lcov']
+	const coverage =
+		typeof config.coverage === 'string' ? config.coverage.split(/\s*,\s*/g) : config.coverage && ['lcov']
 
 	config.set({
 		browsers: ['Chrome'],
@@ -40,7 +41,6 @@ module.exports = function(config) {
 		},
 		rollupPreprocessor: {
 			options: rollupConfig({
-				plugins: [],
 				progress: !CI,
 				sourcemap: 'inline',
 				output: {
@@ -51,6 +51,7 @@ module.exports = function(config) {
 					json(),
 					coverage &&
 						istanbul({
+							extensions: ['.js', '.ts'],
 							include: ['src/**/*.js', 'src/**/*.ts'],
 							exclude: ['src/**/__*__/**']
 						})
