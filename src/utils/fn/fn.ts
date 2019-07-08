@@ -5,7 +5,7 @@
  * @modified Mon Apr 08 2019 13:26:23 GMT+0800 (China Standard Time)
  */
 
-import { applyScope } from "./apply";
+import { applyScope } from './apply'
 
 /**
  * create function by code string

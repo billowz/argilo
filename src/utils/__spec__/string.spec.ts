@@ -1,4 +1,4 @@
-import { trim, escapeStr } from '../string'
+import { trim, escapeStr, upperFirst, lowerFirst } from '../string'
 import { assert } from '../../assert'
 
 describe('utils/string', () => {
@@ -13,5 +13,9 @@ describe('utils/string', () => {
 
 	it('escapeStr', () => {
 		assert.eq(escapeStr('\n\t\f"\''), '\\n\\t\\f\\"\\\'')
+	})
+	it('case', () => {
+		assert.eq(upperFirst('abc'), 'Abc')
+		assert.eq(lowerFirst('ABC'), 'aBC')
 	})
 })

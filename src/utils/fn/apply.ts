@@ -5,7 +5,7 @@
  * @modified Mon Apr 08 2019 13:26:23 GMT+0800 (China Standard Time)
  */
 
-import { GLOBAL } from "../consts";
+import { GLOBAL } from '../consts'
 
 /**
  * generate apply function
