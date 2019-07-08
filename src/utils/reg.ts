@@ -22,6 +22,6 @@ const REG_ESCAPE = /[-\/\\^$*+?.()|[\]{}]/g
 /**
  * escape string for RegExp
  */
-export function reEscape(str: string): string {
+export function escapeReg(str: string): string {
 	return str.replace(REG_ESCAPE, '\\$&')
 }

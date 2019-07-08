@@ -5,11 +5,11 @@
  * @modified 2019-06-04T15:30:06.041Z+08:00
  */
 
-import { charCode, isStr, isArray, isInt, isNum } from '../utils'
+import { byte, isStr, isArray, isInt, isNum } from '../utils'
 
 export function genCharCodes(start: number | string, end: number | string, ignoreCase?: boolean) {
-	let s: number = isNum(start) ? (start as number) : charCode(start as string),
-		e: number = isNum(end) ? (end as number) : charCode(end as string),
+	let s: number = isNum(start) ? (start as number) : byte(start as string),
+		e: number = isNum(end) ? (end as number) : byte(end as string),
 		codes: number[] = new Array(e - s),
 		i = 0
 	if (ignoreCase) {
@@ -32,7 +32,7 @@ export function eachCharCodes(codes: number | string | any[], ignoreCase: boolea
 	let i: number
 	if (isStr(codes)) {
 		i = (codes as any).length
-		while (i--) eachCharCode(charCode(codes as any, i), ignoreCase, cb)
+		while (i--) eachCharCode(byte(codes as any, i), ignoreCase, cb)
 	} else if (isArray(codes)) {
 		i = (codes as any).length
 		while (i--) eachCharCodes((codes as any)[i], ignoreCase, cb)

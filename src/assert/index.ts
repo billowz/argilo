@@ -198,10 +198,10 @@ function mkAssertor<T extends (...args: any[]) => assert>(
 			? makeArray(args as number, i => `arg${i + 1}`)
 			: (args as string[]),
 		paramStr = params.join(', '),
-		cond = isArray(condition) ? condition[0] : condition,
-		expr = (isArray(condition) ? condition[1] : '') + (isStr(cond) ? `(${cond})` : `cond(${paramStr})`)
+		cond = isArray(condition) ? (condition as any)[0] : condition,
+		expr = (isArray(condition) ? (condition as any)[1] : '') + (isStr(cond) ? `(${cond})` : `cond(${paramStr})`)
 
-	return (assert[name] = createFn(
+	return ((assert as any)[name] = createFn(
 		`return function assert${upperFirst(name)}(${paramStr}, msg){
 	if (${expr})
 		throw mkErr(Err, msg || dmsg, arguments, ${params.length});

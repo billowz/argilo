@@ -5,7 +5,6 @@
  * @modified Wed Apr 10 2019 11:19:57 GMT+0800 (China Standard Time)
  */
 import { eq, isReg, isTypedArray, isDate, isArray, isPrimitive } from './is'
-import { hasOwnProp } from './ownProp'
 import { create } from './create'
 import { getCtor } from './ctor'
 import { DKeyMap } from './dkeys'

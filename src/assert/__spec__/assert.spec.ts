@@ -108,7 +108,7 @@ describe('assert', function() {
 
 function err(method: string, args: any[], msg?: string) {
 	try {
-		assert[method].apply(assert, args)
+		;(assert as any)[method].apply(assert, args)
 		throw new Error(`assert.${method}: expect to throw Error("${msg}")`)
 	} catch (e) {
 		if (msg && msg !== e.message) {
@@ -119,7 +119,7 @@ function err(method: string, args: any[], msg?: string) {
 
 function noerr(method: string, args: any[]) {
 	try {
-		assert[method].apply(assert, args)
+		;(assert as any)[method].apply(assert, args)
 	} catch (e) {
 		console.log(e)
 		throw new Error(`assert.${method}: expect not to throw Error("${e.message}")`)

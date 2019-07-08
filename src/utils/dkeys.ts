@@ -6,9 +6,9 @@
  */
 import { NULL_CTOR } from './consts'
 
-export const DKeyMap = new NULL_CTOR()
+export const DKeyMap: { [key: string]: boolean } = new (NULL_CTOR as any)()
 
-export const DKeys = []
+export const DKeys: string[] = []
 
 export function isDKey(key: string) {
 	return DKeyMap[key] || false

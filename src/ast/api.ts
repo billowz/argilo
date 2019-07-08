@@ -525,11 +525,11 @@ function mkMatch(args: IArguments | any[], defaultMatchCallback?: onMatchCallbac
 		: assert('invalid match rule {j}', args)
 }
 
-function isStrOrCodes(pattern): boolean {
+function isStrOrCodes(pattern: any): boolean {
 	return isStr(pattern) || isNum(pattern) || isArray(pattern)
 }
 
-function isMatchPattern(pattern): boolean {
+function isMatchPattern(pattern: any): boolean {
 	return isReg(pattern) || isStrOrCodes(pattern)
 }
 

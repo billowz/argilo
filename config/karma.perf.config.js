@@ -1,8 +1,10 @@
 const baseCfg = require('./karma.config')
 
 module.exports = function(config) {
+	config.coverage = false
+
 	baseCfg(config)
-	process.env.NODE_ENV = 'perf'
+
 	config.set({
 		frameworks: ['benchmark'],
 		reporters: ['benchmark'],

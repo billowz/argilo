@@ -23,7 +23,7 @@ export default function accessorPolicy(): ObservePolicy {
 				return target
 			},
 			__watch<T extends ObserverTarget>(observer: IObserver<T>, prop: string, watcher: IWatcher): Error {
-				const { target } = observer
+				const target: any = observer.target
 				let setter: (newValue: any) => void
 				if (!observer.isArray) {
 					setter = (newValue: any) => {

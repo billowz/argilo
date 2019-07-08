@@ -57,7 +57,7 @@ init:
             $current_c = $color_name
             $color=$(Get-Variable "color_$color_name" -ValueOnly)
             if ( -not $color) {
-              Write-Error "invalid color: $color_name"
+              Write-Error "invalid color`:` $color_name"
             }
           } else{
             $color=$color_normal
@@ -148,6 +148,15 @@ install:
   - npm install -g codecov
   - npm install
   - ps: EndTimeInfo "Install develop dependencies"
+
+  # update build details
+  - ps: LogInfo "The build worker image is $env:APPVEYOR_BUILD_WORKER_IMAGE"
+  - ps: |
+      StartTimeInfo "generating build details ..."
+      npx general-release preview -p appveyor --no-color
+      $release = $($LastExitCode -eq 0)
+      ExitErron $($LastExitCode -eq 1) 1 "pre-release with error`:` $LastExitCode"
+      EndTimeInfo "generated build details"
 
 before_build:
   - ps: StartTimeInfo "Compiling..."

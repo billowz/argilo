@@ -4,7 +4,7 @@ suite(`isBool`, function() {
 	bench(false)
 	bench({}, '{}')
 
-	function bench(v, name?) {
+	function bench(v: any, name?: string) {
 		benchmark(`argilo.isBool: ${name || v}`, function() {
 			isBool(v)
 		})
@@ -34,7 +34,7 @@ suite(`isBool`, function() {
 	const inst = _is(Boolean)
 	const str = _str(`[object Boolean]`)
 
-	function compare(v) {
+	function compare(v: any) {
 		return v === true || v === false
 	}
 })
@@ -45,7 +45,7 @@ suite(`isInteger`, function() {
 	bench(1.1)
 	bench('0', '"0"')
 
-	function bench(v, name?) {
+	function bench(v: any, name?: string) {
 		benchmark(`argilo.isInt: ${name || v}`, function() {
 			isInt(v)
 		})
@@ -60,7 +60,7 @@ suite(`isInteger`, function() {
 			})
 	}
 
-	function _isInt(v) {
+	function _isInt(v: any) {
 		return typeof v === 'number' && v % 1 === 0
 	}
 })
@@ -69,7 +69,7 @@ suite(`isArray`, function() {
 	bench([], '[]')
 	bench(arguments, 'arguments')
 
-	function bench(v, name) {
+	function bench(v: any, name?: string) {
 		benchmark(`argilo.isArray: ${name || v}`, function() {
 			isArray(v)
 		})
@@ -98,7 +98,7 @@ suite(`isArray`, function() {
 	const inst = _is(Array)
 	const str = _str(`[object Array]`)
 
-	function instof(v) {
+	function instof(v: any) {
 		v instanceof Array
 	}
 })
@@ -126,7 +126,7 @@ suite(`isArrayLike`, function() {
 
 	bench({ length() {}, 0: 1 }, '{fn}')
 
-	function bench(v, name) {
+	function bench(v: any, name?: string) {
 		benchmark(`argilo.isArrayLike: ${name || v}`, function() {
 			isArrayLike(v)
 		})
@@ -140,7 +140,7 @@ suite(`isArrayLike`, function() {
 		})
 	}
 
-	function inst(obj) {
+	function inst(obj: any) {
 		if (obj === undefined && obj === null) return false
 		switch (obj.constructor) {
 			case Array:
@@ -155,7 +155,7 @@ suite(`isArrayLike`, function() {
 
 	const reg = /Array\]$/
 
-	function str(obj) {
+	function str(obj: any) {
 		var str = toStr.call(obj)
 		switch (str) {
 			case `[object String]`:
@@ -170,16 +170,16 @@ suite(`isArrayLike`, function() {
 	}
 })
 
-function _typeof(type) {
-	return obj => typeof obj === type
+function _typeof(type: string) {
+	return (obj: any) => typeof obj === type
 }
 
-function _is(Type) {
-	return obj => obj !== undefined && obj !== null && obj.constructor === Type
+function _is(Type: (...args: any[]) => any) {
+	return (obj: any) => obj !== undefined && obj !== null && obj.constructor === Type
 }
 
 const toStr = Object.prototype.toString
 
-function _str(fmt) {
-	return obj => toStr.call(obj) === fmt
+function _str(fmt: string) {
+	return (obj: any) => toStr.call(obj) === fmt
 }

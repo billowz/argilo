@@ -77,14 +77,14 @@ export function reduceObj<T, E>(
 	accumulator: T,
 	callback: ReduceObjCallback<T, E>,
 	own?: boolean
-)
+): T
 export function reduceObj<T, E>(
 	obj: { [key: string]: E },
 	accumulator: T,
 	callback: ReduceObjCallback<T, E>,
 	scope?: any,
 	own?: boolean
-)
+): T
 export function reduceObj<T, E>(
 	obj: { [key: string]: E },
 	accumulator: T,

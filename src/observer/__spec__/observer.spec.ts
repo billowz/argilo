@@ -54,7 +54,7 @@ describe('observer', function() {
 		createObserver(new Cls())
 
 		function Ctor() {}
-		createObserver(new Ctor())
+		createObserver(new (Ctor as any)())
 
 		assert.throw(() => observer(1))
 		assert.throw(() => observer(new Date()))
@@ -110,7 +110,7 @@ describe('observer', function() {
 					o.email = 'paul@domain.com'
 					o.age = 15
 				},
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({ name: ['Paul', 'Mary'], email: ['paul@domain.com', 'mary@domain.com'], age: [15, 18] })
 				}
 			},
@@ -125,7 +125,7 @@ describe('observer', function() {
 					o.email = 'paul@domain.com'
 					o.age = 15
 				},
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({})
 				}
 			},
@@ -137,7 +137,7 @@ describe('observer', function() {
 					o.email = 'mary@domain.com'
 					c.uncollect('email')
 				},
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({ name: ['Mary', 'Paul'] })
 				}
 			},
@@ -149,7 +149,7 @@ describe('observer', function() {
 					o.email = 'paul@domain.com'
 					o.age = 20
 				},
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({})
 				}
 			},
@@ -195,7 +195,7 @@ describe('observer', function() {
 			this.age = age
 		}
 		B.prototype = create(A.prototype)
-		observeSimpleObject(new B(simpleObject.age), done)
+		observeSimpleObject(new (B as any)(simpleObject.age), done)
 	})
 
 	it('observe changes on an sub-object', function(done) {
@@ -229,7 +229,7 @@ describe('observer', function() {
 						c.collect('[0]', 'length', '$change')
 						o[0]++
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect(
 							vb
 								? {}
@@ -246,7 +246,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.push(1)
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							length: [2, 1],
 							$change: [c.ob.proxy, c.ob.proxy]
@@ -259,7 +259,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.unshift(3)
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							'[0]': [3, 2],
 							length: [3, 2],
@@ -273,7 +273,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.splice(0, 1, 4)
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							'[0]': [4, 3],
 							$change: [c.ob.proxy, c.ob.proxy]
@@ -286,7 +286,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.splice(1, 0, 3)
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							length: [4, 3],
 							$change: [c.ob.proxy, c.ob.proxy]
@@ -299,7 +299,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.splice(0, 1)
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							'[0]': [3, 4],
 							length: [3, 4],
@@ -313,7 +313,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.pop()
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							length: [2, 3],
 							$change: [c.ob.proxy, c.ob.proxy]
@@ -326,7 +326,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.shift()
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							'[0]': [2, 3],
 							length: [1, 2],
@@ -342,7 +342,7 @@ describe('observer', function() {
 						o[2] = 4
 						o[3] = 5
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect(
 							es6proxy
 								? {
@@ -359,7 +359,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.sort((a, b) => b - a)
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							'[0]': [5, 2],
 							$change: [c.ob.proxy, c.ob.proxy]
@@ -372,7 +372,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.reverse()
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							'[0]': [2, 5],
 							$change: [c.ob.proxy, c.ob.proxy]
@@ -385,7 +385,7 @@ describe('observer', function() {
 					setup(o, c) {
 						o.fill(0)
 					},
-					done(o, c) {
+					done(o: any, c) {
 						c.expect({
 							'[0]': [0, 2],
 							$change: [c.ob.proxy, c.ob.proxy]
@@ -480,7 +480,7 @@ describe('observer', function() {
 					this.expectVersions = proxy(o.versions)
 					o.versions.unshift(assign({}, this.versions[0]))
 				},
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({
 						'versions.$change': [this.expectVersions, this.expectVersions],
 						'versions.length': [2, 1],
@@ -497,7 +497,7 @@ describe('observer', function() {
 			},
 			{
 				name: '1.1. sync the latest: 1.0.1',
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({
 						latest: ['1.0.1', null]
 					})
@@ -523,7 +523,7 @@ describe('observer', function() {
 					this.expectVersions = [[assign({}, this.versions[0])].concat(o.versions), proxy(o.versions)]
 					o.versions = this.expectVersions[0]
 				},
-				done(o, c) {
+				done(o: any, c) {
 					this.expectVersions[0] = proxy(this.expectVersions[0])
 					c.expect({
 						versions: this.expectVersions,
@@ -543,7 +543,7 @@ describe('observer', function() {
 			},
 			{
 				name: '2.1. sync the latest: 1.0.2',
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({
 						latest: ['1.0.2', '1.0.1']
 					})
@@ -569,7 +569,7 @@ describe('observer', function() {
 					this.expectVersions = [proxy(o.versions), proxy(o.versions)]
 					o.versions = o.versions
 				},
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({
 						versions: this.expectVersions,
 						'versions.$change': this.expectVersions
@@ -603,7 +603,7 @@ describe('observer', function() {
 					this.expectVersion = proxy(o.versions)
 					o.versions = null
 				},
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({
 						versions: [null, this.expectVersion],
 						'versions.$change': [undefined, this.expectVersion],
@@ -622,7 +622,7 @@ describe('observer', function() {
 			},
 			{
 				name: '4.1. sync the latest: undefined',
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({
 						latest: [undefined, '1.0.2']
 					})
@@ -633,7 +633,7 @@ describe('observer', function() {
 				setup(o, c) {
 					o.dependencies.lodash.version = '4.17.9'
 				},
-				done(o, c) {
+				done(o: any, c) {
 					c.expect({
 						'dependencies.lodash.version': ['4.17.9', '4.17.8']
 					})
@@ -665,7 +665,7 @@ describe('observer', function() {
 					]
 					o.dependencies = this.expectDeps[0]
 				},
-				done(o, c) {
+				done(o: any, c) {
 					this.expectDeps[0] = proxy(this.expectDeps[0])
 					c.expect({
 						dependencies: this.expectDeps,

@@ -42,7 +42,7 @@ suite('String Lookups', function() {
 	})
 })
 
-function lookup_switch(kw) {
+function lookup_switch(kw: string) {
 	switch (kw) {
 		case 'await':
 			return 1
@@ -119,11 +119,11 @@ function lookup_switch(kw) {
 
 var lookup_switch_fn = eval('(' + lookup_switch + ')')
 
-function lookup_switch_eval(kw) {
+function lookup_switch_eval(kw: string) {
 	lookup_switch_fn(kw)
 }
 
-function lookup_switch_len(kw) {
+function lookup_switch_len(kw: string) {
 	switch (kw.length) {
 		case 2:
 			switch (kw) {
@@ -248,11 +248,13 @@ function lookup_switch_len(kw) {
 
 var lookup_switch_len_fn = eval('(' + lookup_switch + ')')
 
-function lookup_switch_len_eval(kw) {
+function lookup_switch_len_eval(kw: string) {
 	lookup_switch_len_fn(kw)
 }
 
-const KW_OBJECT = {
+const KW_OBJECT: {
+	[key: string]: number
+} = {
 	await: 1,
 	break: 2,
 	case: 3,
@@ -289,11 +291,11 @@ const KW_OBJECT = {
 	yield: 34
 }
 
-function lookup_object(kw) {
+function lookup_object(kw: string) {
 	const result = KW_OBJECT[kw]
 	return result === undefined ? 0 : result
 }
-let lookup_map
+let lookup_map: (k: string) => number
 if (GLOBAL.Map) {
 	const KW_MAP = new Map([
 		['await', 1],
@@ -332,7 +334,7 @@ if (GLOBAL.Map) {
 		['yield', 34]
 	])
 
-	lookup_map = function lookup_map(kw) {
+	lookup_map = function lookup_map(kw: string) {
 		const result = KW_MAP.get(kw)
 		return result === undefined ? 0 : result
 	}

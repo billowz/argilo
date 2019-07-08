@@ -7,7 +7,7 @@
 
 import { RuleOptions } from './Rule'
 import { RegMatchRule } from './RegMatchRule'
-import { reEscape, mixin, charCode } from '../utils'
+import { escapeReg, mixin, byte } from '../utils'
 
 @mixin({ type: 'String' })
 export class StringMatchRule extends RegMatchRule {
@@ -18,7 +18,7 @@ export class StringMatchRule extends RegMatchRule {
 	 * @param options		Rule Options
 	 */
 	constructor(name: string, str: string, ignoreCase: boolean, options: RuleOptions) {
-		super(name, new RegExp(reEscape(str), ignoreCase ? 'i' : ''), 0, charCode(str), options)
+		super(name, new RegExp(escapeReg(str), ignoreCase ? 'i' : ''), 0, byte(str), options)
 		this.setExpr(str)
 	}
 }

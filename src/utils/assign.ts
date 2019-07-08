@@ -54,7 +54,7 @@ export function doAssign<T extends object>(
 		if ((source = sources[i])) {
 			for (prop in source) {
 				if (!DKeyMap[prop] && filter(prop, target, source)) {
-					target[prop] = source[prop]
+					;(target as any)[prop] = source[prop]
 				}
 			}
 		}

@@ -10,7 +10,7 @@ import { eachObj, eachArray, isFn, applyScope, defValue, SKIP } from '../utils'
 import { P_PROTOTYPE } from '../utils/consts'
 
 type ArrayHook = [string, (...args: any[]) => any]
-const arrayHooks = []
+const arrayHooks: ArrayHook[] = []
 const ARRAY_LEN_CHANGE = [ARRAY_LENGTH, ARRAY_CHANGE]
 const arrayHookCfg: {
 	[methods: string]: [string[]?, { [prop: string]: any }?] | ((ob: IObserver<any[]>, args: IArguments) => void)
@@ -30,7 +30,7 @@ const arrayHookCfg: {
 					? target[prop]
 					: SKIP
 				: prop >= start && (d || prop < end)
-				? target[prop]
+				? (target as any)[prop]
 				: SKIP
 		)
 	},
@@ -39,7 +39,11 @@ const arrayHookCfg: {
 		const start = args[1],
 			end = args[2]
 		ob.notifies(null, prop =>
-			prop === ARRAY_CHANGE ? proxy : prop !== ARRAY_LENGTH && (prop >= start && prop < end) ? target[prop] : SKIP
+			prop === ARRAY_CHANGE
+				? proxy
+				: prop !== ARRAY_LENGTH && (prop >= start && prop < end)
+				? (target as any)[prop]
+				: SKIP
 		)
 	},
 	shift: [],
@@ -48,7 +52,7 @@ const arrayHookCfg: {
 }
 eachObj(arrayHookCfg, (hooker, methods) => {
 	eachArray(methods.split(','), method => {
-		const fn = Array[P_PROTOTYPE][method]
+		const fn = (Array[P_PROTOTYPE] as any)[method]
 		let hook: (...args: any[]) => any
 		if (isFn(hooker)) {
 			const cb: (ob: IObserver<any[]>, args: IArguments) => void = hooker as ((ob: IObserver<any[]>) => void)
@@ -70,7 +74,7 @@ eachObj(arrayHookCfg, (hooker, methods) => {
 })
 
 function getArrayOriginValue(prop: string, ob: IObserver<any[]>) {
-	return prop === ARRAY_CHANGE ? ob.proxy : ob.target[prop]
+	return prop === ARRAY_CHANGE ? ob.proxy : (ob.target as any)[prop]
 }
 
 /**

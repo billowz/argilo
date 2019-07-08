@@ -1,6 +1,6 @@
 {
 	"compilerOptions": {
-		"target": "ESNext",
+		"target": "es3",
 		"module": "commonjs",
 		"lib": ["es6", "es2015", "dom"],
 		"moduleResolution": "node",
@@ -12,7 +12,7 @@
 		"experimentalDecorators": true,
 		"diagnostics": true,
 		"forceConsistentCasingInFileNames": true,
-		"noImplicitAny": false,
+		"noImplicitAny": true,
 		"noImplicitUseStrict": true,
 		"allowUnusedLabels": true,
 		"allowJs": false,

@@ -839,7 +839,7 @@ if (!policy.__watch) policy.__watch = () => {}
 
 export const proxyEnable = policy.__proxy
 
-let __getObserver: <T extends ObserverTarget>(target: T) => Observer<T> = target => {
+let __getObserver: <T extends ObserverTarget>(target: T) => Observer<T> = (target: any) => {
 	const ob = target[OBSERVER_KEY]
 	if (ob && (ob.target === target || ob.proxy === target)) return ob
 }
@@ -874,7 +874,7 @@ let __loadSubObserver: <T extends ObserverTarget>(observer: Observer<any>, prop:
  * @param object the object
  * @return the original object | the object
  */
-let source: <T extends ObserverTarget>(obj: T) => T = <T>(obj: T): T => {
+let source: <T extends ObserverTarget>(obj: T) => T = function<T>(obj: T): T {
 	const observer = obj && __getObserver(obj)
 	return observer ? observer.target : obj
 }
@@ -885,7 +885,7 @@ let source: <T extends ObserverTarget>(obj: T) => T = <T>(obj: T): T => {
  * @param object the object
  * @return the proxy object | the object
  */
-let proxy: <T extends ObserverTarget>(obj: T) => T = <T>(obj: T): T => {
+let proxy: <T extends ObserverTarget>(obj: T) => T = function<T>(obj: T): T {
 	const observer = obj && __getObserver(obj)
 	return observer ? observer.proxy : obj
 }
@@ -927,7 +927,7 @@ let $set: (obj: any, path: string | string[], value: any) => void = (obj, path, 
 
 //──── optimize on Non-Proxy policy ──────────────────────────────────────────────────────
 if (!proxyEnable) {
-	__getObserver = target => {
+	__getObserver = (target: any) => {
 		const oserver = target[OBSERVER_KEY]
 		if (oserver && oserver.target === target) return oserver
 	}

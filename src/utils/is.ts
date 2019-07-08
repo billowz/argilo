@@ -5,16 +5,18 @@
  * @modified Tue Apr 23 2019 17:11:05 GMT+0800 (China Standard Time)
  */
 
-import { P_CTOR, GLOBAL, T_BOOL, T_FN, T_NUM, T_STRING, T_UNDEF } from './consts'
+import { P_CTOR, GLOBAL, T_BOOL, T_FN, T_NUM, T_STRING } from './consts'
 import { getCtor } from './ctor'
 import { toStr } from './toStr'
 
 /**
  * is equals
- * > o1 === o2 || NaN === NaN
+ * > obj === target || NaN === NaN
+ * @param obj		The object to test
+ * @param target 	the compare object
  */
-export function eq(o1: any, o2: any): boolean {
-	return o1 === o2 || (o1 !== o1 && o2 !== o2)
+export function eq(obj: any, target: any): boolean {
+	return obj === target || (obj !== obj && target !== target)
 }
 
 //========================================================================================
@@ -25,50 +27,64 @@ export function eq(o1: any, o2: any): boolean {
 
 /**
  * is null
+ * @param obj 	The object to test
  */
-export function isNull(o: any): boolean {
-	return o === null
+export function isNull(obj: any): boolean {
+	return obj === null
 }
 
 /**
  * is undefined
+ * @param obj 	The object to test
  */
-export function isUndef(o: any): boolean {
-	return o === undefined
+export function isUndef(obj: any): boolean {
+	return obj === undefined
 }
 
 /**
  * is null or undefined
+ * @param obj 	The object to test
  */
-export function isNil(o: any): boolean {
-	return o === null || o === undefined
+export function isNil(obj: any): boolean {
+	return obj === null || obj === undefined
+}
+
+function mkIsPrimitive(type: string): (obj: any) => boolean {
+	return function is(obj: any): boolean {
+		return typeof obj === type
+	}
 }
 
 /**
  * is boolean
+ * @param obj 	The object to test
  */
-export const isBool: (o: any) => boolean = mkIsPrimitive(T_BOOL)
+export const isBool: (obj: any) => boolean = mkIsPrimitive(T_BOOL)
 
 /**
  * is a number
+ * @param obj 	The object to test
  */
-export const isNum: (o: any) => boolean = mkIsPrimitive(T_NUM)
+export const isNum: (obj: any) => boolean = mkIsPrimitive(T_NUM)
 
 /**
  * is a string
+ * @param obj 	The object to test
  */
-export const isStr: (o: any) => boolean = mkIsPrimitive(T_STRING)
+export const isStr: (obj: any) => boolean = mkIsPrimitive(T_STRING)
 
 /**
  * is a function
+ * @param obj 	The object to test
  */
-export const isFn: (o: any) => boolean = mkIsPrimitive(T_FN)
+export const isFn: (obj: any) => boolean = mkIsPrimitive(T_FN)
 
 /**
  * is integer number
+ * @param obj 	The object to test
  */
-export function isInt(o: any): boolean {
-	return o === 0 || (o ? typeof o === T_NUM && o % 1 === 0 : false)
+export function isInt(obj: any): boolean {
+	return obj === 0 || (obj ? typeof obj === T_NUM && obj % 1 === 0 : false)
 }
 
 /**
@@ -79,10 +95,11 @@ export function isInt(o: any): boolean {
  * - number
  * - string
  * - function
+ * @param obj 	The object to test
  */
-export function isPrimitive(o: any): boolean {
-	if (!o) return true
-	switch (typeof o) {
+export function isPrimitive(obj: any): boolean {
+	if (!obj) return true
+	switch (typeof obj) {
 		case T_BOOL:
 		case T_NUM:
 		case T_STRING:
@@ -90,12 +107,6 @@ export function isPrimitive(o: any): boolean {
 			return true
 	}
 	return false
-}
-
-function mkIsPrimitive(type: string): (o: any) => boolean {
-	return function is(o: any): boolean {
-		return typeof o === type
-	}
 }
 
 //========================================================================================
@@ -106,65 +117,82 @@ function mkIsPrimitive(type: string): (o: any) => boolean {
 
 /**
  * is instanceof
+ * @param obj 	The object to test
+ * @param Ctr 	Function to test against
  */
-export function instOf(obj: any, Cls: Function): boolean {
-	return obj !== undefined && obj !== null && obj instanceof Cls
+export function instOf(obj: any, Ctr: Function): boolean {
+	return obj !== undefined && obj !== null && obj instanceof Ctr
 }
 
 /**
  * is child instance of Type
+ * @param obj 	The object to test
+ * @param Ctr 	Function or Function[] to test against
  */
-export function is(o: any, Type: Function | Function[]): boolean {
-	if (o !== undefined && o !== null) {
-		const C = o[P_CTOR] || Object
-		if (Type[P_CTOR] === Array) {
-			var i = Type.length
+export function is(obj: any, Ctr: Function | Function[]): boolean {
+	if (obj !== undefined && obj !== null) {
+		const C = obj[P_CTOR] || Object
+		if (Ctr[P_CTOR] === Array) {
+			var i = Ctr.length
 			while (i--) {
-				if (C === (Type as Function[])[i]) {
+				if (C === (Ctr as Function[])[i]) {
 					return true
 				}
 			}
 		} else {
-			return C === Type
+			return C === Ctr
 		}
 	}
 	return false
 }
 
+function mkIs(Type: Function): (obj: any) => boolean {
+	return function is(obj: any): boolean {
+		return obj !== undefined && obj !== null && obj[P_CTOR] === Type
+	}
+}
+
 /**
  * is boolean or Boolean
+ * @param obj 	The object to test
  */
-export const isBoolean: (o: any) => boolean = mkIs(Boolean)
+export const isBoolean: (obj: any) => boolean = mkIs(Boolean)
 
 /**
  * is number or Number
+ * @param obj 	The object to test
  */
-export const isNumber: (o: any) => boolean = mkIs(Number)
+export const isNumber: (obj: any) => boolean = mkIs(Number)
 
 /**
  * is string or String
+ * @param obj 	The object to test
  */
-export const isString: (o: any) => boolean = mkIs(String)
+export const isString: (obj: any) => boolean = mkIs(String)
 
 /**
  * is Date
+ * @param obj 	The object to test
  */
-export const isDate: (o: any) => boolean = mkIs(Date)
+export const isDate: (obj: any) => boolean = mkIs(Date)
 
 /**
  * is RegExp
+ * @param obj 	The object to test
  */
-export const isReg: (o: any) => boolean = mkIs(RegExp)
+export const isReg: (obj: any) => boolean = mkIs(RegExp)
 
 /**
  * is Array
+ * @param obj 	The object to test
  */
-export const isArray: (o: any) => boolean = Array.isArray || mkIs(Array)
+export const isArray: (obj: any) => boolean = Array.isArray || mkIs(Array)
 
 /**
  * is Typed Array
+ * @param obj 	The object to test
  */
-export const isTypedArray: (o: any) => boolean = typeof ArrayBuffer === T_FN ? ArrayBuffer.isView : () => false
+export const isTypedArray: (obj: any) => boolean = typeof ArrayBuffer === T_FN ? ArrayBuffer.isView : () => false
 
 /**
  * is Array or pseudo-array
@@ -175,10 +203,11 @@ export const isTypedArray: (o: any) => boolean = typeof ArrayBuffer === T_FN ? A
  * - HTMLCollection
  * - Typed Array
  * - {length: int, [length-1]: any}
+ * @param obj 	The object to test
  */
-export function isArrayLike(o: any): boolean {
-	if (o && o[P_CTOR]) {
-		switch (o[P_CTOR]) {
+export function isArrayLike(obj: any): boolean {
+	if (obj && obj[P_CTOR]) {
+		switch (obj[P_CTOR]) {
 			case Array:
 			case String:
 			case GLOBAL.NodeList:
@@ -193,32 +222,27 @@ export function isArrayLike(o: any): boolean {
 			case GLOBAL.Float64Array:
 				return true
 		}
-		const len = o.length
-		return typeof len === T_NUM && (len === 0 || (len > 0 && len % 1 === 0 && len - 1 in o))
+		const len = obj.length
+		return typeof len === T_NUM && (len === 0 || (len > 0 && len % 1 === 0 && len - 1 in obj))
 	}
-	return o === ''
+	return obj === ''
 }
 
 /**
  * is simple Object
  * TODO object may has constructor property
+ * @param obj 	The object to test
  */
-export function isObj(o: any): boolean {
-	return o !== undefined && o !== null && getCtor(o) === Object
+export function isObj(obj: any): boolean {
+	return obj !== undefined && obj !== null && getCtor(obj) === Object
 }
 
 /**
  * is simple Object
- * TODO object may has constructor property
+ * @param obj 	The object to test
  */
-export function isObject(o: any): boolean {
-	return toStr(o) === '[object Object]'
-}
-
-function mkIs(Type: Function): (o: any) => boolean {
-	return function is(o: any): boolean {
-		return o !== undefined && o !== null && o[P_CTOR] === Type
-	}
+export function isObject(obj: any): boolean {
+	return toStr(obj) === '[object Object]'
 }
 
 const blankStrReg = /^\s*$/
@@ -227,13 +251,14 @@ const blankStrReg = /^\s*$/
  * - string: trim(string).length === 0
  * - array: array.length === 0
  * - pseudo-array: pseudo-array.length === 0
+ * @param obj 	The object to test
  */
-export function isBlank(o: any): boolean {
-	if (o) {
-		if (o[P_CTOR] === String) {
-			return blankStrReg.test(o)
+export function isBlank(obj: any): boolean {
+	if (obj) {
+		if (obj[P_CTOR] === String) {
+			return blankStrReg.test(obj)
 		}
-		return o.length === 0
+		return obj.length === 0
 	}
 	return true
 }

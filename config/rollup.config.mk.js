@@ -1,19 +1,18 @@
 const path = require('path'),
-	babelPlugin = require('rollup-plugin-babel'),
 	nodeResolve = require('rollup-plugin-node-resolve'),
 	commonjs = require('rollup-plugin-commonjs'),
-	terser = require('rollup-plugin-terser').terser,
 	jscc = require('rollup-plugin-jscc'),
-	prototypeMinify = require('rollup-plugin-prototype-minify'),
+	typescript = require('rollup-plugin-typescript'),
+	terser = require('rollup-plugin-terser').terser,
 	visualizer = require('rollup-plugin-visualizer'),
+	istanbul = require('rollup-plugin-istanbul'),
 	progress = require('rollup-plugin-progress')
 
 const CI = process.env.CI
 
 const configOptions = mkMap(
-		'target,debug,compact,strict,sourcemap,sourceRoot,outDir,extensions,banner,footer,babel,progress,codeAnalysis'
-	),
-	babelConfigOptions = mkMap('plugins,presets')
+	'target,debug,compact,strict,sourcemap,sourceRoot,outDir,extensions,banner,footer,progress,codeAnalysis'
+)
 
 /**
  * @param {*}					config...								rollup configuration
@@ -30,73 +29,70 @@ const configOptions = mkMap(
  * @param {string}				config.footer							banner
  * @param {boolean}				[config.progress=true]					show progress
  * @param {string}				config.codeAnalysis						code analysis file
- * @param {*}					config.babel							babel configuration
- * @param {any[]}				config.babel.presets					babel presets
- * @param {any[]}				config.babel.plugins					babel plugins
- * @param {*}					config.babel...							preset-env configuration
  */
 function mkConfig(config) {
-	const target = config.target || 'es3',
+	const target = (config.target || 'es3').toLowerCase(),
 		debug = !!config.debug,
 		extensions = config.extensions || ['.js', '.ts'],
 		banner = config.banner,
 		footer = config.footer,
 		sourcemap = config.sourcemap === undefined ? true : config.sourcemap,
 		compact = config.compact,
-		codeAnalysis = config.codeAnalysis,
-		es3 = target === 'es3',
-		es5 = target === 'es5',
-		es6 = target === 'es6'
+		codeAnalysis =
+			config.codeAnalysis && (typeof config.codeAnalysis === 'string' ? config.codeAnalysis : 'analysis.html')
 
 	const rollupOptions = assignBy({}, k => !configOptions[k], config, {
-			output: (Array.isArray(config.output) ? config.output : [config.output])
-				.filter(o => !!o)
-				.map(output => {
-					const amdModule = /^(?:amd|umd)$/.test(output.format),
-						amd =
-							amdModule && (!output.amd || typeof output.amd !== 'object')
-								? { id: output.amd || output.name }
-								: undefined,
-						file =
-							output.file &&
-							path.join(
-								config.outDir || '.',
-								!/\.js$/.test(output.file)
-									? `${output.file}${debug ? '.dev' : ''}${compact ? '.min' : ''}.js`
-									: output.file
-							),
-						sourceRoot =
-							output.sourceRoot ||
-							config.sourceRoot ||
-							(amdModule ? `/${amd.id}` : output.name && `/${output.name}`),
-						sourcemapPathTransform = output.sourcemapPathTransform
+		output: (Array.isArray(config.output) ? config.output : [config.output])
+			.filter(o => !!o)
+			.map(output => {
+				const amdModule = /^(?:amd|umd)$/.test(output.format),
+					amd =
+						amdModule && (!output.amd || typeof output.amd !== 'object')
+							? { id: output.amd || output.name }
+							: undefined,
+					file =
+						output.file &&
+						path.join(
+							config.outDir || '.',
+							!/\.js$/.test(output.file)
+								? `${output.file}${debug ? '.dev' : ''}${compact ? '.min' : ''}.js`
+								: output.file
+						),
+					sourceRoot =
+						typeof output.sourceRoot === 'string'
+							? output.sourceRoot
+							: typeof config.sourceRoot === 'string'
+							? config.sourceRoot
+							: amdModule
+							? `/${amd.id}`
+							: output.name && `/${output.name}`,
+					sourcemapPathTransform = output.sourcemapPathTransform
 
-					return Object.assign(
-						{
-							banner,
-							footer,
-							sourcemap,
-							strict: config.strict !== false,
-							esModule: !es3,
-							freeze: !es3,
-							compact: !!compact
-						},
-						output,
-						{
-							amd,
-							file,
-							sourceRoot: undefined,
-							sourcemapPathTransform(p) {
-								if (sourceRoot) {
-									p = path.join(sourceRoot, p.replace(/^(?:\.\.[\/\\])+/, ''))
-								}
-								return sourcemapPathTransform ? sourcemapPathTransform(p) : p
+				return Object.assign(
+					{
+						banner,
+						footer,
+						sourcemap,
+						strict: config.strict !== false,
+						esModule: target !== 'es3',
+						freeze: target !== 'es3',
+						compact: !!compact
+					},
+					output,
+					{
+						amd,
+						file,
+						sourceRoot: undefined,
+						sourcemapPathTransform(p) {
+							if (sourceRoot) {
+								p = path.join(sourceRoot, p.replace(/^(?:\.\.[\/\\])+/, ''))
 							}
+							return sourcemapPathTransform ? sourcemapPathTransform(p) : p
 						}
-					)
-				})
-		}),
-		babelOptions = config.babel || {}
+					}
+				)
+			})
+	})
 
 	if (rollupOptions.output.length <= 1) rollupOptions.output = rollupOptions.output[0]
 
@@ -104,52 +100,20 @@ function mkConfig(config) {
 		plugins: [
 			nodeResolve({ mainFields: ['module', 'main'], extensions }),
 			commonjs(),
-			babelPlugin({
-				presets: [
-					'@babel/preset-typescript',
-					[
-						'@babel/preset-env',
-						assignBy(
-							{
-								modules: false,
-								loose: es3,
-								useBuiltIns: false,
-								spec: false,
-								targets: es3
-									? {
-											ie: '6'
-									  }
-									: es5
-									? {
-											ie: '9'
-									  }
-									: {
-											chrome: '59'
-									  }
-							},
-							k => !babelConfigOptions[k],
-							config.babel
-						)
-					]
-				].concat(babelOptions.presets || []),
-				plugins: babelOptions.plugins || [],
-				extensions
+			jscc({
+				values: Object.assign({ _TARGET: target, _DEBUG: debug }, config.macros)
 			}),
-			//jscc({ values: Object.assign({ _TARGET: target, _DEBUG: debug }, config.macros) }),
-			!CI && config.progress !== false && progress()
+			typescript({ module: 'ESNext', target })
 		]
 			.concat(rollupOptions.plugins || [])
 			.concat([
-				// prototypeMinify({
-				// 	sourcemap: !!sourcemap
-				// }),
 				compact &&
 					terser(
 						Object.assign(
 							{
 								warnings: true,
 								sourcemap: !!sourcemap,
-								ie8: es3,
+								ie8: target === 'es3',
 								mangle: {
 									properties: {
 										regex: /^__\w*[^_]$/
@@ -174,7 +138,8 @@ function mkConfig(config) {
 					visualizer({
 						filename: codeAnalysis.replace(/\.html$/, '') + '.html',
 						sourcemap: !!sourcemap
-					})
+					}),
+				!CI && config.progress !== false && progress()
 			])
 			.filter(p => !!p)
 	})

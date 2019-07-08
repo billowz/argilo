@@ -179,7 +179,7 @@ describe('utils/create', function() {
 					email: 'mary@domain.com'
 				},
 				{
-					set(o, p, v) {
+					set(o: any, p, v) {
 						o[p] = v
 						return true
 					}
@@ -243,13 +243,13 @@ describe('utils/create', function() {
 		assert.eq(B.constructor, Function)
 		assert.eq(A.prototype.constructor, A)
 		assert.eq(B.prototype.constructor, B)
-		assert.eq(new A().constructor, A)
+		assert.eq(new (A as any)().constructor, A)
 
 		B.prototype = create(A.prototype)
 		assert.eq(B.prototype.constructor, A)
-		assert.eq(new B().constructor, A)
+		assert.eq(new (B as any)().constructor, A)
 
 		B.prototype.constructor = B
-		assert.eq(new B().constructor, B)
+		assert.eq(new (B as any)().constructor, B)
 	})
 })

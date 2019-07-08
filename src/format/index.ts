@@ -5,7 +5,7 @@
  * @modified Sat Apr 13 2019 18:23:46 GMT+0800 (China Standard Time)
  */
 
-import { create, createFn, charCode, upper, escapeStr, cutStr, isFn, isNil, lower } from '../utils'
+import { create, createFn, byte, upper, escapeStr, isFn, isNil, lower } from '../utils'
 import { get, parsePath } from '../path'
 
 //========================================================================================
@@ -99,7 +99,7 @@ function parseFlags(f: string): FormatFlags {
 	let flags: FormatFlags = 0
 	if (f) {
 		var i = f.length
-		while (i--) flags |= FLAG_MAPPING[f.charAt(i)]
+		while (i--) flags |= (FLAG_MAPPING as any)[f.charAt(i)]
 	}
 	return flags
 }
@@ -516,7 +516,7 @@ export function formatter(fmt: string, offset?: number, getParam?: FormatParamLo
 	while ((m = formatReg.exec(fmt))) {
 		mEnd = formatReg.lastIndex
 		mStart = mEnd - m[0].length
-		lastIdx < mStart && pushStr(cutStr(fmt, lastIdx, mStart))
+		lastIdx < mStart && pushStr(fmt.substring(lastIdx, mStart))
 		if (m[1]) {
 			codes[i] = `arr[${i}](arguments, ${STATE_VAR})`
 			arr[i++] = createFormatter(m, getParam || defaultGetParam)
@@ -525,7 +525,7 @@ export function formatter(fmt: string, offset?: number, getParam?: FormatParamLo
 		}
 		lastIdx = mEnd
 	}
-	lastIdx < fmt.length && pushStr(cutStr(fmt, lastIdx), i)
+	lastIdx < fmt.length && pushStr(fmt.substr(lastIdx), i)
 	return createFn(`return function(){var ${STATE_VAR} = [${offset}, ${offset}]; return ${codes.join(' + ')}}`, [
 		'arr'
 	])(arr)
@@ -588,12 +588,12 @@ const BASE_RADIXS = {
 }
 const BASE_PREFIXS = ['0b', '0o', '0x']
 function baseFormatter(type: string): FormatCallback {
-	const base = BASE_RADIXS[lower(type)],
+	const base = (BASE_RADIXS as any)[lower(type)],
 		n = base[0],
 		__toStr = (num: number) => num.toString(n),
 		toStr = type === 'X' ? (num: number) => upper(__toStr(num)) : __toStr
 	let xprefix = n === 10 ? '' : BASE_PREFIXS[n >> 3]
-	charCode(type) < 96 && (xprefix = upper(xprefix))
+	byte(type) < 96 && (xprefix = upper(xprefix))
 	return numFormatter(v => v >>> 0, (num, flags) => (flags & FORMAT_XPREFIX ? xprefix : ''), toStr, base[1])
 }
 
@@ -602,7 +602,7 @@ function floatFormatter(type: string): FormatCallback {
 	const ____toStr = upper(type) === 'E' ? toExponential : type === 'f' ? toFixed : toPrecision,
 		__toStr = (num: number, flags: FormatFlags, precision: number) => ____toStr(num, precision) || String(num),
 		toStr =
-			charCode(type) > 96
+			byte(type) > 96
 				? __toStr
 				: (num: number, flags: FormatFlags, precision: number) => upper(__toStr(num, flags, precision))
 	return numFormatter(parseFloat, decimalPrefix, toStr, thousandSeparate)

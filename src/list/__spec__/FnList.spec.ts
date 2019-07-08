@@ -1,7 +1,7 @@
 import { FnList } from '../FnList'
 import { assert } from '../../assert'
 
-function createTestObjs(size) {
+function createTestObjs(size: number) {
 	let objs = new Array(size),
 		i = 0
 	for (; i < size; i++)

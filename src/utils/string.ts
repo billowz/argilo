@@ -15,7 +15,7 @@
  * get char code
  * > string.charCodeAt
  */
-export function charCode(str: string, index?: number): number {
+export function byte(str: string, index?: number): number {
 	return str.charCodeAt(index || 0)
 }
 
@@ -25,14 +25,6 @@ export function charCode(str: string, index?: number): number {
  */
 export function char(code: number): string {
 	return String.fromCharCode(code)
-}
-
-export function cutStr(str: string, start: number, end?: number) {
-	return str.substring(start, end)
-}
-
-export function cutLStr(str: string, start: number, len?: number) {
-	return str.substr(start, len)
 }
 
 //========================================================================================
@@ -81,7 +73,7 @@ export function lowerFirst(str: string): string {
  *                                                                                      */
 //========================================================================================
 
-const STR_ESCAPE_MAP = {
+const STR_ESCAPE_MAP: { [key: string]: string } = {
 		'\n': '\\n',
 		'\t': '\\t',
 		'\f': '\\f',

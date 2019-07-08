@@ -88,7 +88,7 @@ export class FnList<T extends Function> {
 	id(fn: T, scope?: any): string {
 		const { fnBinding, scopeBinding } = this
 
-		let fnId = fn[fnBinding],
+		let fnId = (fn as any)[fnBinding],
 			scopeId = scope ? scope[scopeBinding] : DEFAULT_SCOPE_ID
 		if (!fnId) fnId = defValue(fn, fnBinding, ++fnIdGenerator, false, false, false)
 		if (!scopeId) scopeId = defValue(scope, scopeBinding, ++scopeIdGenerator, false, false, false)

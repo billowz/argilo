@@ -6,20 +6,18 @@
  * @modified Mon Apr 08 2019 14:11:37 GMT+0800 (China Standard Time)
  */
 
-import { P_PROTOTYPE } from '../consts'
+import { P_PROTOTYPE, NULL_CTOR } from '../consts'
 import { defProp } from '../defProp'
 import { hasOwnProp } from '../ownProp'
 import { __setProto } from '../proto'
-
-function __() {}
 
 /**
  * create shim
  */
 function doCreate(o: object | null, props?: PropertyDescriptorMap & ThisType<any>): any {
-	__[P_PROTOTYPE] = o
-	const obj = new __()
-	__[P_PROTOTYPE] = null
+	NULL_CTOR[P_PROTOTYPE] = o
+	const obj = new (NULL_CTOR as any)()
+	NULL_CTOR[P_PROTOTYPE] = null
 	if (props) {
 		for (var k in props) {
 			if (hasOwnProp(props, k)) {

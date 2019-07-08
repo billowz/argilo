@@ -14,7 +14,7 @@ import { applyArrayHooks } from './arrayHook'
 declare function execScript(code: string, type: string): void
 declare function parseVB(code: string): void
 
-export default function(): ObservePolicy {
+export default function vbPolicy(): ObservePolicy {
 	if (GLOBAL.VBArray) {
 		try {
 			execScript(['Function parseVB(code)', '\tExecuteGlobal(code)', 'End Function'].join('\n'), 'VBScript')
@@ -28,7 +28,7 @@ export default function(): ObservePolicy {
 					return isArray ? (applyArrayHooks(target as any[]), target) : new VBProxy(target, observer).__proxy
 				},
 				__watch<T extends ObserverTarget>(observer: IObserver<T>, prop: string, watcher: IWatcher): Error {
-					if (!observer.isArray && !observer.target[VBPROXY_KEY].__props[prop]) {
+					if (!observer.isArray && !(observer.target as any)[VBPROXY_KEY].__props[prop]) {
 						return new Error(`property[${prop}] is not defined`)
 					}
 				}
@@ -71,7 +71,7 @@ export class VBProxy<T extends {}> {
 			if (!isKey(prop)) {
 				propMap[prop] = true
 				props[i++] = prop
-				if (isFn(source[prop])) __fns[j++] = prop
+				if (isFn((source as any)[prop])) __fns[j++] = prop
 			}
 		}
 		applyProps(props, propMap, OBJECT_DEFAULT_PROPS)
@@ -80,7 +80,7 @@ export class VBProxy<T extends {}> {
 
 		while (j--) {
 			prop = __fns[j]
-			fns[prop] = [, source[prop]]
+			fns[prop] = [, (source as any)[prop]]
 		}
 
 		this.source = source
@@ -88,7 +88,7 @@ export class VBProxy<T extends {}> {
 		this.__proxy = proxy
 		this.__fns = fns
 		this.__props = propMap
-		source[VBPROXY_KEY] = this
+		;(source as any)[VBPROXY_KEY] = this
 	}
 
 	set(prop: string, value: any) {
@@ -98,13 +98,13 @@ export class VBProxy<T extends {}> {
 		} else if (fns[prop]) {
 			fns[prop] = null
 		}
-		this.__observer.notify(prop, source[prop])
-		source[prop] = value
+		this.__observer.notify(prop, (source as any)[prop])
+		;(source as any)[prop] = value
 	}
 
 	get(prop: string) {
 		const fn = this.__fns[prop]
-		return fn ? fn[0] || (fn[0] = fn[1].bind(this.__proxy)) : this.source[prop]
+		return fn ? fn[0] || (fn[0] = fn[1].bind(this.__proxy)) : (this.source as any)[prop]
 	}
 	toJSON() {}
 }

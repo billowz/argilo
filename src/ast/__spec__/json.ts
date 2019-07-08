@@ -1,5 +1,7 @@
 import { arr2obj } from '../../utils'
 import { match, appendMatch, attachMatch, and, option, or, any } from '../api'
+import { AndRule } from '../AndRule'
+import { Rule } from '../Rule'
 
 var UNDEFINED = match('undefined', attachMatch(undefined)),
 	NULL = match('null', attachMatch(null)),
@@ -13,7 +15,7 @@ var UNDEFINED = match('undefined', attachMatch(undefined)),
 	STRING = match('string', /"((?:[^\\"]|\\.)*)"/, 1, `"`)
 
 // prettier-ignore
-var VALUE = or('value', () => [
+var VALUE: Rule = or('value', () => [
 		UNDEFINED,
 		NULL,
 		BOOLEAN,
@@ -44,7 +46,7 @@ var OBJECT_PROPERTY = and('property', [
 	], attachMatch((data:any[]) => arr2obj(data, d => d)))
 
 // prettier-ignore
-var ARRAY_ELEM = and('element', [
+var ARRAY_ELEM:Rule = and('element', [
 		/\s*/,
 		VALUE,
 		/\s*/

@@ -27,7 +27,7 @@ describe('utils/assign', function() {
 		assert.eql(assign({}, Foo.prototype), { a: 1 })
 
 		// assign without prototype properties
-		assert.eql(assign({}, new Foo()), {})
+		assert.eql(assign({}, new (Foo as any)()), {})
 	})
 	it('assignIf', function() {
 		// assignIf source properties
@@ -52,6 +52,6 @@ describe('utils/assign', function() {
 		assert.eql(assignIf({}, Foo.prototype), { a: 1 })
 
 		// assignIf without prototype properties
-		assert.eql(assignIf({}, new Foo()), {})
+		assert.eql(assignIf({}, new (Foo as any)()), {})
 	})
 })

@@ -12,7 +12,7 @@ bench({}, 8)
 bench(undefined, 10)
 bench({}, 10)
 
-function bench(scope, argLen) {
+function bench(scope: any, argLen: number) {
 	const fn = fnBuilder(argLen)()
 	const args = new Array(argLen)
 	let i
@@ -64,7 +64,7 @@ function bench(scope, argLen) {
 	)
 }
 
-function fnBuilder(argLen) {
+function fnBuilder(argLen: number) {
 	const tokens = new Array(argLen)
 	while (argLen--) tokens[argLen] = 'a' + argLen
 	return createFn(`

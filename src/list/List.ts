@@ -38,7 +38,7 @@ export class List<T> {
 		return this.__length
 	}
 	has(obj: T): boolean {
-		const node: ListNode<T> = obj[this.binding]
+		const node: ListNode<T> = (obj as any)[this.binding]
 		return node ? node[0] === obj && node[3] === this : false
 	}
 	/**
@@ -175,7 +175,7 @@ export class List<T> {
 
 	private __initNode(obj: T): ListNode<T> {
 		const { binding } = this
-		let node: ListNode<T> = obj[binding]
+		let node: ListNode<T> = (obj as any)[binding]
 		if (node && node[0] === obj) {
 			if (node[3] === this) {
 				this.__remove(node)
@@ -194,7 +194,7 @@ export class List<T> {
 	}
 
 	private __getNode(obj: T): ListNode<T> {
-		const node: ListNode<T> = obj[this.binding]
+		const node: ListNode<T> = (obj as any)[this.binding]
 		assert.is(node && node[0] === obj && node[3] === this, 'Object is not in this List')
 		return node
 	}
@@ -256,7 +256,7 @@ export class List<T> {
 
 	private __lazyRemove(node: ListNode<T>): void {
 		const { __lazyRemoves: lazyRemoves } = this
-		node[0][this.binding] = null // unbind this node
+		;(node[0] as any)[this.binding] = null // unbind this node
 		node[3] = null
 		if (lazyRemoves) {
 			lazyRemoves.push(node)

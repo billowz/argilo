@@ -6,7 +6,7 @@ import { makeMap } from '../../utils'
 
 type Element = {
 	tag: string
-	attrs: {}
+	attrs: { [key: string]: string }
 	children?: Node[]
 	content?: string
 }
@@ -55,7 +55,7 @@ const ATTR_NAME = match(
 			/\s*/
 		])
 	], (data, l, ctx) => {
-			const attrs = {}
+			const attrs:{[key:string]:string} = {}
 			for (let i = 0, l = data.length; i < l; i += 2) attrs[data[i]] = data[i + 1][0]
 			ctx.add(attrs)
 	})

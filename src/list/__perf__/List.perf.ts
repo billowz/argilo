@@ -17,7 +17,7 @@ perf(1000)
 
 perf(10000)
 
-function createTestObjs(size) {
+function createTestObjs(size: number) {
 	let objs = new Array(size),
 		i = 0
 	for (; i < size; i++) {
@@ -28,7 +28,7 @@ function createTestObjs(size) {
 	return objs
 }
 
-function perf(listSize) {
+function perf(listSize: number) {
 	suite('add empty list x' + listSize, function() {
 		benchmark('List.add', function() {
 			const objs = createTestObjs(listSize)
@@ -41,7 +41,7 @@ function perf(listSize) {
 
 		benchmark('Array.push', function() {
 			const objs = createTestObjs(listSize)
-			const array = []
+			const array: any[] = []
 			for (let i = 0, l = objs.length; i < l; i++) {
 				addArray(array, objs[i])
 			}
@@ -125,11 +125,11 @@ function perf(listSize) {
 		let nr1 = 0,
 			nr2 = 0
 
-		function cb1(v) {
+		function cb1(v: any) {
 			nr1++
 		}
 
-		function cb2(v) {
+		function cb2(v: any) {
 			nr2++
 		}
 		benchmark('List.each', function() {
@@ -149,7 +149,7 @@ function perf(listSize) {
 	})
 }
 
-function addArray(array, obj) {
+function addArray(array: any[], obj: any) {
 	let i = array.length
 	while (i--) {
 		if (array[i] === obj) break
@@ -159,7 +159,7 @@ function addArray(array, obj) {
 	}
 }
 
-function removeArray(array, obj) {
+function removeArray(array: any[], obj: any) {
 	let i = array.length
 	while (i--) {
 		if (array[i] === obj) {

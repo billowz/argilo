@@ -124,7 +124,8 @@ export class Rule {
 	protected error(msg: string, context: MatchContext, src?: MatchError, capturable?: boolean): MatchError {
 		const err = this.mkErr(msg, context, capturable, src)
 		const userErr = this.onErr(err, context, this)
-		if (userErr) return (userErr as any).$ruleErr ? (userErr as MatchError) : ((err[0] = String(userErr)), err)
+		if (userErr)
+			return (userErr as any).$ruleErr ? (userErr as MatchError) : (((err as any)[0] = String(userErr)), err)
 	}
 
 	/**

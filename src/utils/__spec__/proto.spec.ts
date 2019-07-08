@@ -9,7 +9,7 @@ describe('utils/proto', () => {
 		function A() {}
 
 		assert.eq(protoOf(A), Function.prototype)
-		assert.eq(protoOf(new A()), A.prototype)
+		assert.eq(protoOf(new (A as any)()), A.prototype)
 	})
 
 	it('setProto', function() {
@@ -24,6 +24,6 @@ describe('utils/proto', () => {
 
 		setProto(A, b)
 		assert.eq(protoOf(A), b)
-		assert.eq(protoOf(new A()), A.prototype)
+		assert.eq(protoOf(new (A as any)()), A.prototype)
 	})
 })

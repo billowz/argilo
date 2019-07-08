@@ -17,7 +17,7 @@ perf(1000)
 
 perf(10000)
 
-function createTestObjs(size) {
+function createTestObjs(size: number) {
 	let objs = new Array(size),
 		i = 0
 
@@ -30,7 +30,7 @@ function createTestObjs(size) {
 	return objs
 }
 
-function perf(listSize) {
+function perf(listSize: number) {
 	suite('add empty FnList x' + listSize, function() {
 		benchmark('FnList.add', function() {
 			const objs = createTestObjs(listSize)
@@ -44,7 +44,7 @@ function perf(listSize) {
 
 		benchmark('Array.push', function() {
 			const objs = createTestObjs(listSize)
-			const array = []
+			const array: any[] = []
 			for (let i = 0, l = objs.length, obj; i < l; i++) {
 				obj = objs[i]
 				addArray(array, obj.fn, obj.scope)
@@ -141,11 +141,11 @@ function perf(listSize) {
 		let nr1 = 0,
 			nr2 = 0
 
-		function cb1(fn, scope) {
+		function cb1(fn: Function, scope: any) {
 			nr1++
 		}
 
-		function cb2(fn, scope) {
+		function cb2(fn: Function, scope: any) {
 			nr2++
 		}
 		benchmark('FnList.each', function() {
@@ -182,11 +182,11 @@ function perf(listSize) {
 		let nr1 = 0,
 			nr2 = 0
 
-		function cb1(a) {
+		function cb1() {
 			nr1++
 		}
 
-		function cb2(a) {
+		function cb2() {
 			nr2++
 		}
 
@@ -208,7 +208,7 @@ function perf(listSize) {
 	})
 }
 
-function addArray(array, fn, scope) {
+function addArray(array: any[], fn: Function, scope: any) {
 	let i = array.length
 	while (i--) {
 		if (array[i].fn === fn && array[i].scope === scope) break
@@ -221,7 +221,7 @@ function addArray(array, fn, scope) {
 	}
 }
 
-function removeArray(array, fn, scope) {
+function removeArray(array: any[], fn: Function, scope: any) {
 	let i = array.length
 	while (i--) {
 		if (array[i].fn === fn && array[i].scope === scope) {

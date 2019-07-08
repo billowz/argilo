@@ -13,10 +13,10 @@ function watchBench(attrNum: number) {
 			benchmark('Proxy', function() {
 				const obj = createObj()
 				new Proxy(obj, {
-					get(source, attr, proxy) {
+					get(source: any, attr, proxy) {
 						return source[attr]
 					},
-					set(source, attr, value, proxy) {
+					set(source: any, attr, value, proxy) {
 						source[attr] = value
 						return true
 					}
@@ -46,7 +46,7 @@ function watchBench(attrNum: number) {
 	}
 
 	function createObj() {
-		const obj = {}
+		const obj: { [key: string]: number } = {}
 		for (let i = 0; i < attrNum; i++) {
 			obj['attr' + i] = 1
 		}

@@ -22,7 +22,7 @@ if ($defProp) {
 			get() {
 				return val
 			},
-			set(value) {
+			set(value: any) {
 				val = value
 			}
 		})

@@ -8,7 +8,7 @@
 import { MatchError, RuleOptions } from './Rule'
 import { MatchContext } from './MatchContext'
 import { MatchRule } from './MatchRule'
-import { mixin, createFn, create, mapArray, cutLStr, stickyReg, isInt } from '../utils'
+import { mixin, createFn, create, mapArray, stickyReg, isInt } from '../utils'
 
 /**
  * match string by RegExp
@@ -122,6 +122,6 @@ function pickAll(m: string[]): string[] {
 	return m
 }
 
-function pickTestStr(buff: string, start: number, end: number): string {
-	return cutLStr(buff, start, end)
+function pickTestStr(buff: string, start: number, len: number): string {
+	return buff.substr(start, len)
 }

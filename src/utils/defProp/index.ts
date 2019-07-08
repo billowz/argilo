@@ -5,18 +5,28 @@
  * @modified Wed Apr 10 2019 11:47:32 GMT+0800 (China Standard Time)
  */
 
-//#if _TARGET === 'es3'
+//#if _TARGET !== 'es3'
 
-import { defProp } from './polyfill'
-export { propDescriptor, propAccessor, defProp } from './polyfill'
+export const propDescriptor = true
+export const propAccessor = true
+export const defProp = Object.defineProperty
 
 /*#else
 
-import { defProp } from './polyfill'
-export { propDescriptor, propAccessor, defProp } from './main'
+export { propDescriptor, propAccessor, defProp } from './defProp'
+import { defProp } from './defProp'
 
 //#endif */
 
+/**
+ * define property value
+ * @param obj				target object
+ * @param prop				property name
+ * @param value				value
+ * @param [enumerable=true]
+ * @param [configurable=true]
+ * @param [writable=true]
+ */
 export function defValue<V>(
 	obj: any,
 	prop: string,
@@ -34,6 +44,15 @@ export function defValue<V>(
 	return value
 }
 
+/**
+ * define property accessor
+ * @param obj					target object
+ * @param prop					property name
+ * @param get					get accessor
+ * @param set					set accessor
+ * @param [enumerable=true]
+ * @param [configurable=true]
+ */
 export function defAccessor(
 	obj: any,
 	prop: string,

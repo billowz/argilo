@@ -7,7 +7,7 @@
 // TODO Cache API
 import { create } from './create'
 
-export function cache<T extends Function>(key: any | ((args: IArguments) => string), builder: T, ca): T {
+export function cache<T extends Function>(key: any | ((args: IArguments) => string), builder: T, ca: any): T {
 	const cache = create(null)
 	return function() {} as any
 }

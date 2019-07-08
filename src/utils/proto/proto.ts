@@ -54,9 +54,10 @@ export const setProto: typeof Object.setPrototypeOf =
 	$setProto ||
 	(protoProp
 		? __setProto
-		: function setPrototypeOf(obj, proto) {
-				for (let p in proto) {
-					if (!(p in obj)) obj[p] = proto[p]
-				}
+		: function setPrototypeOf(obj: any, proto: any) {
+				if (proto)
+					for (let p in proto) {
+						if (!(p in obj)) obj[p] = proto[p]
+					}
 				return __setProto(obj, proto)
 		  })

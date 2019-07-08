@@ -136,7 +136,7 @@ export type EachArrayCallback<E> = (data: E, index: number, array: IArray<E>) =>
 export function eachArray<E>(array: IArray<E>, callback: EachArrayCallback<E>, scope?: any): false | number {
 	callback = bind(callback, scope)
 	for (let i = 0, l = array.length; i < l; i++) {
-		if (callback(array[i], i, array) === STOP) return i
+		if (callback((array as any)[i], i, array) === STOP) return i
 	}
 	return false
 }
@@ -152,7 +152,7 @@ export function eachArray<E>(array: IArray<E>, callback: EachArrayCallback<E>, s
 export function reachArray<E>(array: IArray<E>, callback: EachArrayCallback<E>, scope?: any): false | number {
 	callback = bind(callback, scope)
 	let i = array.length
-	while (i--) if (callback(array[i], i, array) === STOP) return i
+	while (i--) if (callback((array as any)[i], i, array) === STOP) return i
 	return false
 }
 

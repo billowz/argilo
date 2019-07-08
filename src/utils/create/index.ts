@@ -5,12 +5,12 @@
  * @modified Mon Apr 08 2019 14:11:29 GMT+0800 (China Standard Time)
  */
 
-//#if _TARGET === 'es3'
+//#if _TARGET !== 'es3'
 
-export { create } from './polyfill'
+export const create = Object.create
 
 /*#else
 
-export { create } from './main'
+export { create } from './create'
 
 //#endif */

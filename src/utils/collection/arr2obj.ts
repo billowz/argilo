@@ -28,7 +28,7 @@ export function doArr2Obj<E, T>(
 	each(array, (data, index, array) => {
 		const r: Control | [string, any] = callback(data, index, array)
 		if (isArray(r)) {
-			obj[r[0]] = r[1]
+			obj[(r as any)[0]] = (r as any)[1]
 		} else {
 			return r as Control
 		}

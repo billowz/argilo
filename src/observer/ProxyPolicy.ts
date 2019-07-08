@@ -13,7 +13,7 @@ import { T_UNDEF } from '../utils/consts'
 /**
  * @ignore
  */
-export default function(): ObservePolicy {
+export default function proxyPolicy(): ObservePolicy {
 	if (typeof Proxy !== T_UNDEF)
 		return {
 			__name: 'Proxy',
@@ -22,8 +22,8 @@ export default function(): ObservePolicy {
 				let setter: (source: ObserverTarget, prop: string, value: any) => boolean
 				if (isArray) {
 					// cache the array length for set out index on Array
-					var len = target[ARRAY_LENGTH]
-					setter = (source, prop, value) => {
+					var len = (target as any)[ARRAY_LENGTH]
+					setter = (source: any, prop, value) => {
 						if (prop === ARRAY_LENGTH) {
 							if (len !== value) {
 								observer.notify(ARRAY_LENGTH, len)
@@ -42,7 +42,7 @@ export default function(): ObservePolicy {
 						return true
 					}
 				} else {
-					setter = (source, prop, value) => {
+					setter = (source: any, prop, value) => {
 						observer.notify(prop, source[prop])
 						source[prop] = value
 						return true

@@ -1,10 +1,20 @@
 {
 	// editor
 	"files.eol": "\n",
-	"editor.tabSize": 8,
+	"editor.tabSize": 4,
 	"editor.insertSpaces": false,
-	"javascript.validate.enable": false,
+
+	"javascript.updateImportsOnFileMove.enabled": "always",
+	"typescript.updateImportsOnFileMove.enabled": "always",
+
+	// prettier
+	"editor.formatOnSave": false,
+	"javascript.format.enable": false,
+	"typescript.format.enable": false,
+	"html.format.enable": false,
+	"json.format.enable": false,
 	"prettier.eslintIntegration": true,
+	"prettier.tslintIntegration": true,
 
 	// mocha
 	"mochaExplorer.files": "**/*.spec.ts",
@@ -12,36 +22,35 @@
 	"mochaExplorer.mochaPath": "node_modules/mocha",
 	"mochaExplorer.optsFile": "mocha.opts",
 
-	// comments
+	// paste image
+	"pasteImage.basePath": "${currentFileDir}/images",
+	"pasteImage.path": "${currentFileDir}/images",
+	"pasteImage.prefix": "images/",
+
+	// todo tree
+	"todo-tree.autoRefresh": false,
+	"todo-tree.defaultHighlight": {
+		"foreground": "green",
+		"type": "none"
+	},
+	"todo-tree.customHighlight": {
+		"TODO": {},
+		"FIXME": {}
+	},
+
+	// topper
 	"topper.lastModified": "@modified",
-	"topper.headerTemplates": [
-		{
-			"typescript": {
-				"headerBegin": "/**",
-				"headerPrefix": " *",
-				"headerEnd": " */",
-				"template": [
-					"${headerBegin}",
-					"${headerPrefix} ",
-					"${headerPrefix} @author ${author}",
-					"${headerPrefix} @created ${createdDate}",
-					"${headerPrefix} @modified ${lastModifiedDate}",
-					"${headerEnd}"
-				]
-			},
-			"javascript": {
-				"headerBegin": "/**",
-				"headerPrefix": " *",
-				"headerEnd": " */",
-				"template": [
-					"${headerBegin}",
-					"${headerPrefix} ",
-					"${headerPrefix} @author ${author}",
-					"${headerPrefix} @created ${createdDate}",
-					"${headerPrefix} @modified ${lastModifiedDate}",
-					"${headerEnd}"
-				]
-			}
-		}
-	]
+	"topper.defaultHeaderTemplate": {
+		"headerBegin": "/**",
+		"headerPrefix": " *",
+		"headerEnd": " */",
+		"template": [
+			"${headerBegin}",
+			"${headerPrefix} ",
+			"${headerPrefix} @author ${author}",
+			"${headerPrefix} @created ${createdDate}",
+			"${headerPrefix} @modified ${lastModifiedDate}",
+			"${headerEnd}"
+		]
+	}
 }

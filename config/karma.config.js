@@ -1,10 +1,12 @@
 const path = require('path'),
 	json = require('rollup-plugin-json'),
 	rollupConfig = require('./rollup.config.mk'),
+	istanbul = require('rollup-plugin-istanbul'),
 	pkg = require('../package.json')
 
 const CI = process.env.CI,
-	namespace = pkg.namespace || pkg.name
+	pkgName = pkg.name.replace(/^@.*\//, ''),
+	namespace = pkg.namespace || pkgName.replace(/[\.-]/g, '_')
 
 const polyfills = [
 	{
@@ -18,14 +20,13 @@ const polyfills = [
 ]
 
 module.exports = function(config) {
-	if (config.coverage) {
-		process.env.NODE_ENV = 'test'
-	}
+	const coverage = typeof config.coverage === 'string' ? config.coverage.split(/\s*,\s*/g) : config.coverage && ['lcov']
+
 	config.set({
 		browsers: ['Chrome'],
 		transports: ['websocket', 'polling', 'jsonp-polling'],
 		frameworks: ['mocha'],
-		reporters: config.coverage ? ['spec', 'coverage'] : ['spec'],
+		reporters: coverage ? ['spec', 'coverage-istanbul'] : ['spec'],
 		basePath: path.join(__dirname, '../'),
 		files: polyfills
 			.concat(['src/index.ts'])
@@ -39,28 +40,31 @@ module.exports = function(config) {
 		},
 		rollupPreprocessor: {
 			options: rollupConfig({
-				plugins: [json()],
+				plugins: [],
 				progress: !CI,
-				sourcemap: !CI && 'inline',
+				sourcemap: 'inline',
 				output: {
 					format: 'iife',
 					name: namespace
-				}
+				},
+				plugins: [
+					json(),
+					coverage &&
+						istanbul({
+							include: ['src/**/*.js', 'src/**/*.ts'],
+							exclude: ['src/**/__*__/**']
+						})
+				]
 			}),
 			transformPath(filepath) {
 				return filepath.replace(/\.ts$/, '.js')
 			}
 		},
-		coverageReporter: {
-			dir: 'coverage/',
-			reporters:
-				typeof config.coverage === 'string'
-					? config.coverage.split(',').map(type => ({ type }))
-					: [
-							{
-								type: 'lcov'
-							}
-					  ]
+		coverageIstanbulReporter: {
+			dir: 'coverage/%browser%',
+			reports: coverage,
+			combineBrowserReports: false,
+			skipFilesWithNoCoverage: false
 		},
 		customLaunchers: {
 			IE9: {

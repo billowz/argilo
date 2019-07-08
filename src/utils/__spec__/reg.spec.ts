@@ -1,4 +1,4 @@
 import '../reg'
 describe('utils/reg', () => {
-	it('reEscape')
+	it('escapeReg')
 })

@@ -3,7 +3,7 @@ import { parsePath } from '../..'
 
 suite('observer (same object)', function() {
 	const obj = {},
-		array = []
+		array: any[] = []
 	benchmark('Observer: object', function() {
 		observer(obj)
 	})

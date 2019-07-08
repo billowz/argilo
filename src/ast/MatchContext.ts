@@ -5,7 +5,7 @@
  * @modified Mon Apr 08 2019 13:57:26 GMT+0800 (China Standard Time)
  */
 import { Source } from './Source'
-import { char, charCode, cutStr } from '../utils'
+import { char, byte } from '../utils'
 import { assert } from '../assert'
 
 export type CheckPoint = [number, number]
@@ -52,7 +52,7 @@ export class MatchContext {
 
 	private __flushCode() {
 		const { __buff: buff, __offset: offset } = this
-		this.__code = offset < buff.length ? charCode(buff, offset) : 0
+		this.__code = offset < buff.length ? byte(buff, offset) : 0
 	}
 
 	/**
@@ -139,7 +139,7 @@ export class MatchContext {
 	buff(reset?: boolean): string {
 		let { __buff: buff } = this
 		if (reset) {
-			this.__buff = buff = cutStr(buff, this.__offset)
+			this.__buff = buff = buff.substr(this.__offset)
 			this.__offset = 0
 		}
 		return buff

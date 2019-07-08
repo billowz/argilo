@@ -1,6 +1,6 @@
 {
 	"require": [
-		"babel-register-ts"
+		"ts-node/register"
 	],
 	"extension": [
 		".ts"
@@ -8,13 +8,16 @@
 	"include": [
 		"src/**/*.ts"
 	],
+	"exclude": [
+		"src/**/__*__/*.ts"
+	],
 	"reporter": [
-		"lcov"
+		"text","lcov"
 	],
 	"report-dir": "./coverage/Node",
-	"temp-dir": ".cover-tmp",
+	"temp-dir": ".cover",
 	"cache": true,
 	"all": true,
-	"sourceMap": false,
-	"instrument": false
+	"sourceMap": true,
+	"instrument": true
 }

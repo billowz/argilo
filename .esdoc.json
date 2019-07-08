@@ -1,8 +1,7 @@
 {
 	"source": "./src",
-	"includes": ["\\.ts$"],
-	"excludes": ["\\.__.*__\\.ts$", "\\.js$"],
 	"destination": "./docs",
+	"excludes": ["__.+__", "\\.js$"],
 	"plugins": [
 		{ "name": "esdoc-typescript-plugin" },
 		{
@@ -18,11 +17,6 @@
 					"index": "./README.md",
 					"globalIndex": true,
 					"files": []
-				},
-				"test": {
-					"source": "./src/",
-					"interfaces": ["describe", "it"],
-					"includes": ["\\.spec\\.ts$"]
 				}
 			}
 		}

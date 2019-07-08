@@ -25,7 +25,13 @@ function getArgs(): IArguments {
 	return arguments
 }
 
-const typeTests = {
+const typeTests: {
+	[key: string]: {
+		is: (obj: any) => boolean
+		type?: Function
+		vals: any[]
+	}
+} = {
 	isNull: {
 		is: isNull,
 		vals: [null]
@@ -75,7 +81,14 @@ const typeTests = {
 	}
 }
 
-const isTests = {
+const isTests: {
+	[key: string]: {
+		is: (obj: any) => boolean
+		type?: Function
+		vals: any[]
+		ivals: any[]
+	}
+} = {
 	isInt: {
 		is: isInt,
 		vals: [0.0, -1.0, 1.0],
@@ -210,5 +223,5 @@ function each(o: any, cb: (v: any, i: number | string) => void) {
 function create(o: object): object {
 	function __() {}
 	__.prototype = o
-	return new __()
+	return new (__ as any)()
 }

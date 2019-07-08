@@ -72,7 +72,7 @@ function objBuilder(
 				? () => {
 						let obj = {},
 							i = 0,
-							tmp = obj
+							tmp: any = obj
 						for (; i < last - 1; i++) {
 							tmp = tmp[path[i]] = {}
 						}
@@ -85,7 +85,7 @@ function objBuilder(
 				: () => {
 						let obj = {},
 							i = 0,
-							tmp = obj
+							tmp: any = obj
 						for (; i <= last; i++) {
 							tmp = tmp[path[i]] = {}
 						}

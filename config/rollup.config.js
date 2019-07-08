@@ -2,12 +2,6 @@ const rollupConfig = require('./rollup.config.mk'),
 	pkg = require('../package.json')
 
 const banner = `/*
- *    __ _ _ __ __ _(_) | ___
- *   / _\` | '__/ _\` | | |/ _ \\
- *  | (_| | | | (_| | | | (_) |
- *   \\__,_|_|  \\__, |_|_|\\___/
- *             |___/
- *
  * ${pkg.name} v${pkg.version}
  * ${pkg.homepage}
  *
@@ -17,8 +11,9 @@ const banner = `/*
  * Date: ${new Date().toUTCString()}
  */`
 
-const bundle = pkg.bundle || pkg.name,
-	namespace = pkg.namespace || pkg.name,
+const pkgName = pkg.name.replace(/^@.*\//, ''),
+	bundle = pkg.bundle || pkgName.replace(/\./g, '-'),
+	namespace = pkg.namespace || pkgName.replace(/[\.-]/g, '_'),
 	baseCfg = {
 		outDir: 'dist',
 		input: 'src/index.ts',
@@ -29,18 +24,12 @@ const bundle = pkg.bundle || pkg.name,
 	looseConfig = Object.assign(
 		{
 			target: 'es3',
-			output: [
-				{
-					format: 'umd',
-					name: namespace,
-					amd: bundle,
-					file: `${bundle}.loose`
-				},
-				{
-					format: 'esm',
-					file: `${bundle}.loose.esm`
-				}
-			]
+			output: {
+				format: 'umd',
+				name: namespace,
+				amd: bundle,
+				file: `${bundle}.loose`
+			}
 		},
 		baseCfg
 	),
