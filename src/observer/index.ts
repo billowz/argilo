@@ -7,7 +7,3 @@
 
 export * from './IObserver'
 export * from './Observer'
-
-//#if _TARGET === 'es3'
-export { VBPROXY_KEY, VBPROXY_CTOR_KEY } from './VBPolicy'
-//#endif

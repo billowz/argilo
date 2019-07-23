@@ -1,29 +1,36 @@
 import { apply, applyN, applyNoScope, applyNoScopeN, applyScope, applyScopeN, createFn, fnName, bind } from '../fn'
 import { assert } from '../../assert'
+import { GLOBAL } from '../consts'
 
 describe('utils/fn', function() {
 	describe('bind', function() {
 		'use strict'
+
+		const defaultScope = (function() {
+			return this
+		})()
+
 		it('bind scope', () => {
 			function fn() {
 				return this
 			}
 			let f = bind(fn, null)
 			assert.eq(fn, f)
-			assert.eq(f(), undefined)
+			assert.eq(f(), defaultScope)
 
 			f = bind(fn, undefined)
 			assert.eq(fn, f)
-			assert.eq(f(), undefined)
+			assert.eq(f(), defaultScope)
 
 			f = bind(fn, 0)
 			assert.notEq(fn, f)
-			assert.eq(f(), 0)
+			assert.eq(String(f()), '0')
 
 			f = bind(fn, '')
 			assert.notEq(fn, f)
-			assert.eq(f(), '')
+			assert.eq(String(f()), '')
 		})
+
 		it('bind scope + arguments', () => {
 			function fn(...args: number[]): [any, number]
 			function fn() {
@@ -34,21 +41,21 @@ describe('utils/fn', function() {
 
 			let f = bind(fn, null)
 			assert.eq(fn, f)
-			assert.eql(f(), [undefined, 0, []])
+			assert.eql(f(), [defaultScope, 0, []])
 
 			f = bind(fn, undefined)
 			assert.eq(fn, f)
-			assert.eql(f(), [undefined, 0, []])
+			assert.eql(f(), [defaultScope, 0, []])
 
 			f = bind(fn, undefined, 1)
 			assert.notEq(fn, f)
-			assert.eql(f(), [undefined, 1, [1]])
-			assert.eql(f(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), [undefined, 56, [1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
+			assert.eql(f(), [defaultScope, 1, [1]])
+			assert.eql(f(1, 2, 3, 4, 5, 6, 7, 8, 9, 10), [defaultScope, 56, [1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
 
 			f = bind(fn, undefined, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10)
 			assert.notEq(fn, f)
-			assert.eql(f(), [undefined, 55, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
-			assert.eql(f(1), [undefined, 56, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1]])
+			assert.eql(f(), [defaultScope, 55, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]])
+			assert.eql(f(1), [defaultScope, 56, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 1]])
 
 			f = bind(fn, '', 1)
 			assert.notEq(fn, f)
@@ -92,9 +99,10 @@ describe('utils/fn', function() {
 			}
 			return applyFn
 			function applyFn() {
+				undefined
 				assert.eql(Array.prototype.slice.call(arguments), args)
 				if (scope === undefined || scope === null) {
-					assert.eq(!this || (typeof window !== 'undefined' && this === window) || this === global, true)
+					assert.is(this === undefined || this === GLOBAL)
 				} else {
 					assert.eq(this, scope)
 				}
@@ -117,6 +125,7 @@ describe('utils/fn', function() {
 				assert.eq(apply(fn, scope, args), 55)
 			})
 		})
+
 		it('apply arguments', function() {
 			createApplyFunc(undefined, [1, 2], (fn, scope, args) => {
 				assert.eq(applyNoScope(fn, args), 3)
@@ -129,6 +138,7 @@ describe('utils/fn', function() {
 				assert.eq(apply(fn, null, args), 55)
 			})
 		})
+
 		it('apply scope + arguments with offset/length', function() {
 			createApplyFunc(new String('abc'), [2, 3], (fn, scope) => {
 				assert.eq(applyScopeN(fn, scope, [1, 2, 3, 4], 1, 2), 5)
@@ -139,6 +149,7 @@ describe('utils/fn', function() {
 				assert.eq(applyN(fn, scope, [2, 3, 4, 5, 6, 7, 8, 9, 10, 11], 0, 9), 54)
 			})
 		})
+
 		it('apply arguments with offset/length', function() {
 			createApplyFunc(undefined, [2, 3], (fn, scope, args) => {
 				assert.eq(applyNoScopeN(fn, [1, 2, 3, 4], 1, 2), 5)

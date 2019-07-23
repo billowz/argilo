@@ -4,7 +4,7 @@
  * @created Wed Jul 25 2018 15:24:47 GMT+0800 (China Standard Time)
  * @modified Wed Apr 10 2019 11:19:57 GMT+0800 (China Standard Time)
  */
-import { eq, isReg, isTypedArray, isDate, isArray, isPrimitive } from './is'
+import { eq, isReg, isTypedArray, isDate, isArray, isPrimitive, isNil } from './is'
 import { create } from './create'
 import { getCtor } from './ctor'
 import { DKeyMap } from './dkeys'
@@ -22,7 +22,7 @@ export function doDeepEq(
 	eqObj: (actual: any, expected: any) => boolean
 ) {
 	if (eq(actual, expected)) return true
-	if (actual && expected && getCtor(actual) === getCtor(expected)) {
+	if (!isNil(actual) && !isNil(expected) && getCtor(actual) === getCtor(expected)) {
 		if (isPrimitive(actual)) return String(actual) === String(expected)
 		if (isDate(actual)) return actual.getTime() === expected.getTime()
 		if (isReg(actual)) return eqProps(actual, expected, REG_PROPS)

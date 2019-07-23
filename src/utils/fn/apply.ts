@@ -26,7 +26,7 @@ ${cases.join('\n')}
 ${offset &&
 	`var arr = new Array(len);
 for(var i=0; i<len; i++) arr[i] = args[offset + i];`}
-return fn.apply(${scope || 'null'}, ${offset ? 'arr' : 'args'});
+return fn.apply(${scope || 'undefined'}, ${offset ? 'arr' : 'args'});
 }`)()
 }
 

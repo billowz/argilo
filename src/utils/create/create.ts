@@ -28,6 +28,10 @@ function doCreate(o: object | null, props?: PropertyDescriptorMap & ThisType<any
 	return obj
 }
 
+//#if _DEBUG
+!Object.create && console.log('polyfill Object.create')
+//#endif
+
 /**
  * create object
  */

@@ -5,16 +5,20 @@
  * @modified Tue Apr 23 2019 17:13:10 GMT+0800 (China Standard Time)
  */
 
-import { ObserverTarget, IWatcher, OBSERVER_KEY, IObserver, ARRAY_CHANGE, ObserverCallback } from './IObserver'
-import { ObservePolicy } from './ObservePolicy'
-import proxyPolicy from './ProxyPolicy'
-import accessorPolicy from './AccessorPolicy'
-import vbPolicy from './VBPolicy'
+import { ObserverTarget, OBSERVER_KEY, IObserver, ARRAY_CHANGE, ObserverCallback } from './IObserver'
+import { IWatcher } from './ObservePolicy'
+import policy from './policy'
 import { nextTick } from '../nextTick'
 import { FnList, List } from '../list'
-import { parsePath, formatPath, get, set } from '../path'
-import { defValue, create, isArray, isPrimitive, isNil, toStrType, eq, isObject, SKIP } from '../utils'
+import { parsePath, formatPath, get } from '../path'
+/*#if _TARGET !== 'es6'
+import { set } from '../path'
+//#endif */
+import { defValue, isArray, isPrimitive, isNil, toStrType, eq, isObject, SKIP } from '../utils'
 import { assert } from '../assert'
+import { NULL_CTOR } from '../utils/consts'
+
+export const proxyEnable = policy.__proxy
 
 function isObserverTarget(obj: any) {
 	return obj && (isArray(obj) || isObject(obj))
@@ -225,7 +229,7 @@ class Topic {
 	 */
 	__addSub(subProp: string): Topic {
 		const subCache: { [key: string]: Topic } =
-				this.__subCache || ((this.__subs = []), (this.__subCache = create(null))),
+				this.__subCache || ((this.__subs = []), (this.__subCache = new (NULL_CTOR as any)())),
 			sub: Topic = subCache[subProp] || (subCache[subProp] = new Topic(this.__owner, subProp, this))
 
 		if (!(sub.__state & TOPIC_ENABLED_FLAG)) {
@@ -612,7 +616,7 @@ class Observer<T extends ObserverTarget> implements IObserver<T> {
 
 		assert.is(arrayTarget || isObject(target), `the observer's target can only be an object or an array`)
 
-		const watchers = create(null)
+		const watchers = new (NULL_CTOR as any)()
 		this.__watchers = watchers
 		this.__watcherProps = []
 
@@ -635,7 +639,7 @@ class Observer<T extends ObserverTarget> implements IObserver<T> {
 	 */
 	observe(propPath: string | string[], cb: ObserverCallback<T>, scope?: any): string {
 		const path: string[] = parsePath(propPath),
-			topics = this.__topics || (this.__topics = create(null)),
+			topics = this.__topics || (this.__topics = new (NULL_CTOR as any)()),
 			prop0 = path[0]
 
 		let topic = topics[prop0] || (topics[prop0] = new Topic(this, prop0)),
@@ -826,19 +830,6 @@ class Observer<T extends ObserverTarget> implements IObserver<T> {
  *                                                                                      */
 //========================================================================================
 
-const policy: ObservePolicy = proxyPolicy() || accessorPolicy() || vbPolicy()
-
-assert.is(policy, 'The observer module is not supported.')
-
-//#if _DEBUG
-console.info(`the observer policy: ${policy.__name} -> `, policy)
-//#endif
-
-if (!policy.__createProxy) policy.__createProxy = (observer, target) => target
-if (!policy.__watch) policy.__watch = () => {}
-
-export const proxyEnable = policy.__proxy
-
 let __getObserver: <T extends ObserverTarget>(target: T) => Observer<T> = (target: any) => {
 	const ob = target[OBSERVER_KEY]
 	if (ob && (ob.target === target || ob.proxy === target)) return ob
@@ -926,6 +917,7 @@ let $set: (obj: any, path: string | string[], value: any) => void = (obj, path, 
 }
 
 //──── optimize on Non-Proxy policy ──────────────────────────────────────────────────────
+/*#if _TARGET !== 'es6'
 if (!proxyEnable) {
 	__getObserver = (target: any) => {
 		const oserver = target[OBSERVER_KEY]
@@ -946,6 +938,9 @@ if (!proxyEnable) {
 
 	$set = set
 }
+//#endif */
+
+export { source, proxy, $eq, $get, $set }
 
 /**
  * get or create observer on object
@@ -1053,5 +1048,3 @@ export function unobserveId<T extends ObserverTarget>(target: T, propPath: strin
  * @return existing observer
  */
 export const getObserver: <T extends ObserverTarget>(target: T) => IObserver<T> = __getObserver
-
-export { source, proxy, $eq, $get, $set }

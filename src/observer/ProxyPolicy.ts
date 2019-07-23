@@ -51,6 +51,7 @@ export default function proxyPolicy(): ObservePolicy {
 				return new Proxy(target, {
 					set: setter
 				}) as T
-			}
+			},
+			__watch() {}
 		}
 }

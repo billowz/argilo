@@ -12,7 +12,7 @@
 		"src/**/__*__/*.ts"
 	],
 	"reporter": [
-		"text","lcov"
+		"lcov"
 	],
 	"report-dir": "./coverage/Node",
 	"temp-dir": ".cover",

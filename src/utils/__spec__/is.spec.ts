@@ -16,7 +16,8 @@ import {
 	isString,
 	isNull,
 	isUndef,
-	eq
+	eq,
+	instOf
 } from '../is'
 import { assert } from '../../assert'
 
@@ -204,6 +205,14 @@ describe('utils/is', () => {
 		assert.eq(eq(NaN, NaN), true)
 		assert.eq(eq(0, null), false)
 		assert.eq(eq(1, '1'), false)
+	})
+	it('instOf', function() {
+		assert.eq(instOf(undefined, Object), false)
+		assert.eq(instOf(null, Object), false)
+		assert.eq(instOf(1, Object), false)
+		assert.eq(instOf('1', Object), false)
+		assert.eq(instOf(new String('1'), Object), true)
+		assert.eq(instOf({}, Object), true)
 	})
 })
 

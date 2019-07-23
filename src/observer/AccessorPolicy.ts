@@ -6,8 +6,8 @@
  * @modified Tue Apr 23 2019 18:13:32 GMT+0800 (China Standard Time)
  */
 
-import { IObserver, IWatcher, ARRAY_CHANGE, ObserverTarget, ARRAY_LENGTH } from './IObserver'
-import { ObservePolicy } from './ObservePolicy'
+import { IObserver, ARRAY_CHANGE, ObserverTarget, ARRAY_LENGTH } from './IObserver'
+import { ObservePolicy, IWatcher } from './ObservePolicy'
 import { propAccessor, defAccessor } from '../utils'
 import { applyArrayHooks } from './arrayHook'
 

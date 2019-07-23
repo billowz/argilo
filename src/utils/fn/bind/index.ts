@@ -5,6 +5,8 @@
  * @modified Mon Apr 08 2019 13:26:23 GMT+0800 (China Standard Time)
  */
 
-export * from './apply'
-export * from './fn'
-export * from './bind'
+//#if _TARGET !== 'es3'
+export { bind } from './bind'
+/*#else
+export { bind } from './bindPolyfill'
+//#endif */

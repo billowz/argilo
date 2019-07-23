@@ -5,12 +5,20 @@
  * @modified 2019-06-04T15:12:41.739Z+08:00
  */
 
-import { ObserverTarget, IObserver, IWatcher } from './IObserver'
+import { ObserverTarget, IObserver } from './IObserver'
+
+export type IWatcher = {
+	/**
+	 * notify topics
+	 * @param original the original value
+	 */
+	notify(original: any): void
+}
 
 /**
  * @ignore
  */
-export type ObservePolicy = {
+export interface ObservePolicy {
 	/**
 	 * policy name
 	 */
@@ -27,7 +35,7 @@ export type ObservePolicy = {
 	 * @param target 	target object
 	 * @param isArray 	is array target
 	 */
-	__createProxy?: <T extends ObserverTarget>(observer: IObserver<T>, target: T, isArray: boolean) => T
+	__createProxy: <T extends ObserverTarget>(observer: IObserver<T>, target: T, isArray: boolean) => T
 
 	/**
 	 * watch property
@@ -35,5 +43,5 @@ export type ObservePolicy = {
 	 * @param prop		the property
 	 * @param watcher	the watcher of the property
 	 */
-	__watch?: <T extends ObserverTarget>(observer: IObserver<T>, prop: string, watcher: IWatcher) => Error | void
+	__watch: <T extends ObserverTarget>(observer: IObserver<T>, prop: string, watcher: IWatcher) => Error | void
 }

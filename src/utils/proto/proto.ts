@@ -22,6 +22,10 @@ export const protoProp = { [P_PROTO]: [] } instanceof Array
 
 !protoProp && addDKey(P_PROTO)
 
+//#if _DEBUG
+!prototypeOf && console.log('polyfill Object.setPrototypeOf, __proto__: ' + protoProp)
+//#endif
+
 /**
  * get prototype
  */

@@ -6,7 +6,8 @@ const path = require('path'),
 	terser = require('rollup-plugin-terser').terser,
 	visualizer = require('rollup-plugin-visualizer'),
 	istanbul = require('rollup-plugin-istanbul'),
-	progress = require('rollup-plugin-progress')
+	progress = require('rollup-plugin-progress'),
+	filesize = require('rollup-plugin-filesize')
 
 const CI = process.env.CI
 
@@ -101,6 +102,7 @@ function mkConfig(config) {
 			nodeResolve({ mainFields: ['module', 'main'], extensions }),
 			commonjs(),
 			jscc({
+				sourceMap: false,
 				values: Object.assign({ _TARGET: target, _DEBUG: debug }, config.macros)
 			}),
 			typescript({ module: 'ESNext', target })
@@ -139,7 +141,8 @@ function mkConfig(config) {
 						filename: codeAnalysis.replace(/\.html$/, '') + '.html',
 						sourcemap: !!sourcemap
 					}),
-				!CI && config.progress !== false && progress()
+				!CI && config.progress !== false && progress(),
+				filesize()
 			])
 			.filter(p => !!p && (!Array.isArray(p) || !!p[0]))
 			.sort((p1, p2) => ((Array.isArray(p1) && p1[1]) || 0) - ((Array.isArray(p2) && p2[1]) || 0))

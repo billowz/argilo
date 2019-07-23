@@ -10,7 +10,7 @@ const CI = process.env.CI,
 
 const polyfills = [
 	{
-		pattern: 'node_modules/json3/lib/json3.min.js',
+		pattern: 'node_modules/json3/lib/json3.js',
 		watched: false
 	},
 	{
@@ -19,28 +19,30 @@ const polyfills = [
 	}
 ]
 
+const commaReg = /\s*,\s*/g
+
 module.exports = function(config) {
-	const coverage =
-		typeof config.coverage === 'string' ? config.coverage.split(/\s*,\s*/g) : config.coverage && ['lcov']
+	const coverage = typeof config.coverage === 'string' ? config.coverage.split(commaReg) : config.coverage && ['lcov']
 
 	config.set({
 		browsers: ['Chrome'],
 		transports: ['websocket', 'polling', 'jsonp-polling'],
-		frameworks: ['mocha'],
+		frameworks: ['mocha'].concat(config.sourcemap !== false ? ['source-map-support'] : []),
 		reporters: coverage ? ['spec', 'coverage-istanbul'] : ['spec'],
 		basePath: path.join(__dirname, '../'),
 		files: polyfills
-			.concat(['src/index.ts'])
 			.concat(
-				(config.specs && typeof config.specs === 'string' ? config.specs : '*')
-					.split(',')
-					.map(v => `src/**/${v}.spec.ts`)
-			),
+				(config.specs && typeof config.specs === 'string' ? config.specs : '**/*')
+					.split(commaReg)
+					.map(v => `src/${v}.spec.ts`)
+			)
+			.concat(coverage ? ['src/index.ts'] : []),
 		preprocessors: {
 			'src/**/*.ts': ['rollup']
 		},
 		rollupPreprocessor: {
 			options: rollupConfig({
+				target: config.target || 'es5',
 				progress: !CI,
 				sourcemap: 'inline',
 				output: {
@@ -51,11 +53,11 @@ module.exports = function(config) {
 					json(),
 					coverage &&
 						istanbul({
-							extensions: ['.js', '.ts'],
 							include: ['src/**/*.js', 'src/**/*.ts'],
 							exclude: ['src/**/__*__/**']
 						})
-				]
+				],
+				debug: config.debug === true
 			}),
 			transformPath(filepath) {
 				return filepath.replace(/\.ts$/, '.js')

@@ -36,6 +36,10 @@ if ($defProp) {
  */
 export const propAccessor: boolean = propDescriptor || !!__defineSetter__
 
+//#if _DEBUG
+!propDescriptor && console.log('polyfill Object.defineProperty, propAccessor: ' + propAccessor)
+//#endif
+
 /**
  * define property
  */

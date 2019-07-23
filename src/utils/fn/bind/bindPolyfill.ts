@@ -5,8 +5,25 @@
  * @modified Mon Apr 08 2019 13:26:23 GMT+0800 (China Standard Time)
  */
 
-import { P_PROTOTYPE } from '../consts'
-import { apply, applyN, applyScope, applyScopeN } from './apply'
+import { P_PROTOTYPE } from '../../consts'
+import { bind } from './bind'
+import { apply, applyN, applyScope } from '../apply'
+
+let _bind: <T extends (...args: any[]) => any>(fn: T, scope: any, ...args: any[]) => T
+
+const funcProto = Function[P_PROTOTYPE]
+if (funcProto.bind) {
+	_bind = bind
+} else {
+	console.log("polyfill Function.bind")
+	funcProto.bind = function bind(scope) {
+		return bindPolyfill(this as any, scope, arguments, 1)
+	}
+	_bind = function bind<T extends (...args: any[]) => any>(fn: T, scope: any): T {
+		return bindPolyfill(fn, scope, arguments, 2)
+	}
+}
+export { _bind as bind }
 
 /**
  * bind
@@ -53,25 +70,3 @@ function bindPolyfill<T extends (...args: any[]) => any>(
 				return applyScope(fn, scope, arguments)
 		  } as any)
 }
-
-let _bind: <T extends (...args: any[]) => any>(fn: T, scope: any, ...args: any[]) => T
-
-const funcProto = Function[P_PROTOTYPE]
-if (funcProto.bind) {
-	_bind = function bind<T extends (...args: any[]) => any>(fn: T, scope: any): T {
-		const args = arguments,
-			argLen = args.length
-
-		return (scope === null || scope === undefined) && argLen <= 2
-			? fn
-			: applyScopeN(fn.bind, fn, args, 1, argLen - 1)
-	}
-} else {
-	funcProto.bind = function bind(scope) {
-		return bindPolyfill(this as any, scope, arguments, 1)
-	}
-	_bind = function bind<T extends (...args: any[]) => any>(fn: T, scope: any): T {
-		return bindPolyfill(fn, scope, arguments, 2)
-	}
-}
-export const bind: <T extends (...args: any[]) => any>(fn: T, scope: any, ...args: any[]) => T = _bind

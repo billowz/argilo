@@ -1,5 +1,6 @@
 import { trim, escapeStr, upperFirst, lowerFirst } from '../string'
 import { assert } from '../../assert'
+import { toStr, toStrType } from '../toStr'
 
 describe('utils/string', () => {
 	it('trim', () => {
@@ -17,5 +18,11 @@ describe('utils/string', () => {
 	it('case', () => {
 		assert.eq(upperFirst('abc'), 'Abc')
 		assert.eq(lowerFirst('ABC'), 'aBC')
+	})
+	it('toStr', () => {
+		assert.eq(toStr('abc'), '[object String]')
+	})
+	it('toStrType', () => {
+		assert.eq(toStrType('abc'), 'String')
 	})
 })

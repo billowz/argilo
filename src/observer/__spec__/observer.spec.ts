@@ -4,8 +4,6 @@ import {
 	proxy,
 	getObserver,
 	IObserver,
-	VBPROXY_KEY,
-	VBPROXY_CTOR_KEY,
 	OBSERVER_KEY,
 	$eq,
 	proxyEnable,
@@ -21,6 +19,7 @@ import { parsePath, formatPath } from '../../path'
 import { nextTick } from '../../nextTick'
 import { create, isDKey, assign, keys, eq, eachObj, mapObj, eachArray } from '../../utils'
 import { assert, popErrStack } from '../../assert'
+import { VBPROXY_KEY, VBPROXY_CTOR_KEY } from '../VBPolicy'
 
 const vb = proxyEnable === 'vb',
 	es6proxy = proxyEnable === 'proxy'
@@ -80,6 +79,24 @@ describe('observer', function() {
 			}
 			return obs
 		}
+	})
+
+	it('JSON.stringify', function() {
+		let obs: IObserver<any> = observer({ value1: undefined })
+
+		obs.observe('value1', () => {})
+
+		const s = JSON.stringify(obs.proxy)
+
+		assert.eq(JSON.stringify(obs.proxy), '{}')
+		assert.eq(JSON.stringify(obs.target), '{}')
+
+		obs = observer({ a: 1, b: 1 })
+		obs.observe('a', () => {})
+		assert.eq(JSON.stringify(obs.proxy), '{"a":1,"b":1}')
+		assert.eq(JSON.stringify(obs.target), '{"a":1,"b":1}')
+
+		assert.eq(JSON.stringify([obs.proxy, obs.target]), '[{"a":1,"b":1},{"a":1,"b":1}]')
 	})
 
 	//========================================================================================
@@ -844,6 +861,7 @@ class ObserveChain<T extends ObserverTarget> {
 						)
 						ctx.dirties[stepIdx] = [value, original, false]
 						ctx.called++
+						//#if _DEBUG
 						try {
 							console.log(
 								format(
@@ -855,8 +873,10 @@ class ObserveChain<T extends ObserverTarget> {
 								)
 							)
 						} catch (e) {
+							console.error(e)
 							// TODO VBProxy not work with json3
 						}
+						//#endif
 					},
 					path,
 					dirties: [],
@@ -887,7 +907,9 @@ class ObserveChain<T extends ObserverTarget> {
 				path
 			)
 
+			//#if _DEBUG
 			console.log(format(`[{}][{}]: observe: {}`, stepLabel, path, ctx.listenId))
+			//#endif
 		}
 	}
 	uncollectPath(path: string) {
@@ -929,7 +951,9 @@ class ObserveChain<T extends ObserverTarget> {
 				path,
 				ctx.listenId
 			)
+			//#if _DEBUG
 			console.log(format(`[{}][{}]: unobserved: {}`, stepLabel, path, ctx.listenId))
+			//#endif
 			ctx.listenId = null
 		}
 	}

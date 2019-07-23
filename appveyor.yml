@@ -176,15 +176,20 @@ test_script:
   - npm run unit:node
   - ps: EndTimeInfo "Run Tests on Node$(node --version)"
 
-  # test on browsers
-  - ps: StartTimeInfo "Running Tests on IE8,IE9,Chrome by Karma..."
-  - npm run unit:browser -- --browsers IE8,IE9,Chrome --single-run
-  - ps: EndTimeInfo "Run Tests on IE8,IE9,Chrome by Karma"
+  # test on mainstream browsers (ES6)
+  - ps: StartTimeInfo "Running Tests on Chrome (ES6) by Karma..."
+  - npm run unit:browser -- --browsers Chrome --target es6 --coverage --single-run
+  - ps: EndTimeInfo "Run Tests on Chrome by Karma"
 
-  # test on lower browsers
-  - ps: StartTimeInfo "Running Tests on IE6,IE7 by Karma(no-iframe)..."
-  - npm run unit:browser -- --browsers IE6,IE7 --single-run --no-iframe
-  - ps: EndTimeInfo "Run Tests on IE6,IE7 by Karma(no-iframe)"
+  # test on IE 9-10 (ES5)
+  - ps: StartTimeInfo "Running Tests on IE9,IE10 (ES5) by Karma..."
+  - npm run unit:ie9 -- --browsers IE9,IE10 --coverage --single-run
+  - ps: EndTimeInfo "Run Tests on IE9,IE10 by Karma"
+
+  # test on IE 8 (ES3)
+  - ps: StartTimeInfo "Running Tests on IE8 (ES3) by Karma(no-iframe)..."
+  - npm run unit:ie8 -- --browsers IE8 --coverage --single-run
+  - ps: EndTimeInfo "Run Tests on IE8 by Karma(no-iframe)"
 
 after_test:
   - ps: EndTimeInfo "Run all Tests"

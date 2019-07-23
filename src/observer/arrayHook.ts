@@ -50,6 +50,7 @@ const arrayHookCfg: {
 	unshift: [],
 	'fill,reverse,sort': [null, { length: 1 }]
 }
+
 eachObj(arrayHookCfg, (hooker, methods) => {
 	eachArray(methods.split(','), method => {
 		const fn = (Array[P_PROTOTYPE] as any)[method]

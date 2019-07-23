@@ -34,14 +34,6 @@ export type ObserverCallback<T extends ObserverTarget> = (
 	observer: IObserver<T>
 ) => void
 
-export type IWatcher = {
-	/**
-	 * notify topics
-	 * @param original the original value
-	 */
-	notify(original: any): void
-}
-
 export interface IObserver<T extends ObserverTarget> {
 	/**
 	 * target of the observer
